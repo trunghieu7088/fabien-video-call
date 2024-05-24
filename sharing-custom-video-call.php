@@ -37,6 +37,11 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'SHARING_CUSTOM_VIDEO_CALL_VERSION', '1.0.0' );
 
+//custom code
+define('CUSTOM_VIDEO_CALL_PATH', dirname(__FILE__));
+define('CUSTOM_VIDEO_CALL_URL', plugin_dir_url(__FILE__));
+//end
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-sharing-custom-video-call-activator.php
@@ -80,3 +85,14 @@ function run_sharing_custom_video_call() {
 
 }
 run_sharing_custom_video_call();
+
+
+//custom code
+function require_custom_video_call_core_files()
+{
+	require_once CUSTOM_VIDEO_CALL_PATH . '/includes/functions.php';
+	require_once CUSTOM_VIDEO_CALL_PATH . '/admin/settings.php';
+}
+add_action('after_setup_theme', 'require_custom_video_call_core_files'); 
+
+//end

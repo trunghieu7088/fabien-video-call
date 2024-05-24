@@ -1,0 +1,315 @@
+/* define role page */
+.define-role-block
+{
+    padding:10px 10px;
+    margin-bottom: 380px;
+ 
+}
+.roleTitle
+{
+    font-size:2.5em;
+    text-align: center;
+}
+
+.define-role-form-block
+{
+    display:flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.submit-button-container
+{
+    display:flex;
+    justify-content: center;
+    margin-top:15px;
+}
+.define-role-form-block button
+{
+    width:200px;
+    padding:10px;
+}
+
+.define-role-form-block p
+{    
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+.define-role-form-block p strong
+{
+    font-size:1.5em;
+    margin-right:20px;
+}
+
+.define-role-form-block input[type="radio"]
+{
+    width: 30px;
+    height:30px;
+    margin-right:15px;
+}
+
+.define-role-form-block span
+{
+    margin-left:20px;
+    font-size:1em !important;
+    width:300px;
+}
+
+/* end define role page */
+
+/* profile page */
+.custom-video-call-profile-container
+{
+    margin-top:40px;    
+    margin-bottom: 50px;    
+    box-shadow: 0 5px 30px rgba(7, 36, 86, .075);
+    padding-left: 0px;
+    padding-right:0px;
+    border-radius: 10px;
+    padding-bottom:30px;
+}
+.custom-video-call-profile-header
+{
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(163,162,205,1) 0%, rgba(19,19,163,1) 0%, rgba(0,212,255,1) 100%);
+    height:120px;
+    border-radius: 10px;
+    position: relative;
+    z-index:999;
+}
+
+.custom-video-call-profile-header .avatar-container
+{
+    position: absolute;
+    width:120px;
+    height:120px;     
+    top:80%;
+    left:50%;
+    transform: translate(-50%,-50%);
+}
+
+.custom-video-call-profile-header .avatar-container img
+{
+    border-radius: 50%;
+    width:100%;
+    height: 100%;
+}
+.custom-video-call-profile-body
+{
+    margin-top:80px;
+    padding:10px 25px;
+    width:60%;
+    margin-left:auto;
+    margin-right:auto;
+}
+.custom-video-call-form-title
+{
+    margin-top:0;
+    margin-bottom: 0;
+    font-size:1.3em;
+    color:#d3d3d3;
+}
+.custom-video-call-inputs input[type="text"]
+{
+    width:100%;
+    border-radius: 10px;
+    padding:15px 20px;
+
+    box-shadow: 0px 4px 8px rgba(188, 207, 219, 0.65);
+    margin-top:25px;
+    font-size:1em;
+    border:1px solid rgba(188, 207, 219, 0.65);
+    
+}
+.custom-video-call-inputs input[type="text"]:focus
+{
+    border:1px solid rgba(188, 207, 219, 0.65);
+    outline:0;
+}
+.custom-video-call-profile-bio
+{
+    margin-top:30px;    
+    border-radius: 10px;
+    padding:15px 20px;
+    width: 100%;
+    box-shadow: 0px 4px 8px rgba(188, 207, 219, 0.65);
+    border:1px solid rgba(188, 207, 219, 0.65);
+    box-sizing: border-box;
+}
+.custom-video-call-profile-bio:focus
+{
+    border:1px solid rgba(188, 207, 219, 0.65);
+    outline: 0;
+}
+/* end profile page */
+
+/* post service page */
+.post-service-section
+{    
+    padding:20px 10px;    
+}
+.post-service-title
+{
+    color:#717171;
+    font-size:28px;
+    text-align: center;
+}
+.post-service-form-group
+{
+    margin:10px 0px 25px 0px;    
+    
+}
+
+.post-service-form-group label
+{
+    color:#717171;
+    display: block;
+    margin-bottom:1px;
+    font-weight: 600 !important;
+}
+
+.post-service-form-group input[type="text"]
+{
+    outline:0;
+    border:0;    
+    height:45px;
+    padding:10px 0px;
+    width:100%;
+    margin:0 !important;
+    border-bottom: 1px solid rgba(137, 138, 144, 0.2);
+    background-color: #ffffff;
+    border-radius: 0px;
+}
+.post-service-form-group select
+{
+    background-color: #ffffff;
+    color:#717171;
+}
+.service-image-upload-container
+{
+    margin:10px 0px;
+}
+.video-call-btn-upload-image
+{
+    /* background-color: #00BFFF; */
+    background-color: #ffffff;
+    border:0;
+    outline:0;
+    border:1px solid #d3d3d3;    
+    border-radius: 10px;
+    font-size:18px;
+    padding:10px 20px;
+    color:#717171;
+}
+#uploaded_image
+{
+    display: none;
+}
+@media (min-width: 1200px) {
+    .post-service-section {
+        padding: 10px 100px;
+    }
+}
+/* end */
+
+/* service list page css */
+.service-list-wrapper
+{    
+    padding:20px 15px;
+}
+.service-list-wrapper .custom-service-item
+{
+    border:1px solid #ededed;
+    border-radius: 5px;    
+    margin-bottom:25px;
+    box-shadow: 0px 4px 8px rgba(188, 207, 219, 0.65);
+}
+.service-list-wrapper .custom-service-image-container
+{    
+    padding:15px 10px;   
+  /*  border:1px solid salmon; */
+}
+
+.service-list-wrapper .custom-service-image-container img
+{
+   /* width:350px;
+    height: 240px; */
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+.service-list-wrapper .custom-service-content-container
+{    
+    padding:15px 10px;     
+/*    border:1px solid yellow; */
+}
+.custom-service-list-item-title
+{
+    color:#00BFFF;  
+    font-size:1.5em;    
+    margin-bottom: 0px;
+}
+
+.custom-service-list-item-title a
+{
+    color:#00BFFF;  
+}
+
+.custom-service-list-item-info
+{
+    margin-top:5px;
+    font-size:1em;
+    
+    color: #808080;
+    font-weight: 800 !important;
+}
+.custom-service-list-item-info span
+{
+    margin-right:15px;
+}
+
+.custom-service-list-item-description
+{
+    margin-top:10px;
+    font-size:1.2em;
+    color: #808080;
+    text-align: left;
+    line-height: 25px;
+}
+.custom-service-list-item-author
+{
+    margin-top:15px;
+    font-size:1em;
+    color: #808080;
+    font-style: italic;
+}
+.custom-service-list-item-author img
+{
+    width:40px;
+    height:40px;
+    margin-left:5px;
+    border-radius: 50%;
+}
+/* Portrait */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: portrait) {
+  
+    .service-list-wrapper .custom-service-image-container img
+    {
+        width:250px;
+        height:180px;
+    }
+}
+
+/* Landscape */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
+    
+  
+    .service-list-wrapper .custom-service-image-container img
+    {
+        width:250px;
+        height:180px;
+    }
+}
+/* end */
