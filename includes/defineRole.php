@@ -21,22 +21,39 @@ function custom_video_call_save_role_action()
     $custom_user_info->add_role($role_type);  
     $data['success']='true';
     $data['message']='ok';   
-    $data['redirect_url']=site_url('custom-profile');
+    if(wp_get_referer())
+    {
+        $data['redirect_url']=wp_get_referer();
+    }
+    else
+    {
+        $data['redirect_url']='custom-list-service';
+    }
+
     wp_send_json($data);
     die();
 }
 
-//add_action('wp_loaded','checkmyrole',999);
+//redirect the none-defined users to the define role if they access to custom video call plugin pages
+add_action('wp_head','checkRoleCustomVideo',1);
 
-function checkmyrole()
+function checkRoleCustomVideo()
 {
     $custom_user_info=wp_get_current_user();
-    if ( in_array( 'trainee', $custom_user_info->roles, true ) ) {
-        echo 'trainee';        
-    }
-    else
+    $is_defined_role=false;
+    if ( in_array( 'trainee', $custom_user_info->roles, true ) ||  in_array( 'coach', $custom_user_info->roles, true )) 
     {
-        echo 'meo phari';
+        $is_defined_role=true;    
     }
-    
+    if(is_page('custom-post-service') || is_page('custom-service-list') || is_page('custom-manage-booking'))
+    {                        
+        if($is_defined_role==false)
+        {
+            wp_redirect('definerole');
+        }           
+    }     
+    if($is_defined_role==true && is_page('definerole'))     
+    {
+        wp_redirect('custom-service-list');
+    }  
 }

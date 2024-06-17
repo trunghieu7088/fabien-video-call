@@ -33,7 +33,8 @@ function create_video_call_service_action()
     if($video_call_service_created && !is_wp_error($video_call_service_created))
     {
         update_post_meta($video_call_service_created,'video_service_price',$service_price);
-        update_post_meta($video_call_service_created,'video_service_price_currency','USD');
+        update_post_meta($video_call_service_created,'video_service_price_currency_code',$custom_service_currency_code);
+        update_post_meta($video_call_service_created,'video_service_price_currency_sign',$custom_service_currency_sign);
         
         update_post_meta($video_call_service_created,'video_service_duration',$service_duration);
         update_post_meta($video_call_service_created,'video_service_duration_type','minutes');
@@ -48,13 +49,13 @@ function create_video_call_service_action()
 
         $data['success']='true';
         $data['message']='Submit service successfully';   
-        $data['redirect_url']=site_url('custom-profile');
+        $data['redirect_url']=site_url('custom-service-list');
     }
     else
     {
         $data['success']='false';
         $data['message']='failed to create service';   
-        $data['redirect_url']=site_url('custom-profile');
+        $data['redirect_url']=site_url('custom-post-service');
     }
    
     wp_send_json($data);

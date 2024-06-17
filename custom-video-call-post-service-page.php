@@ -4,6 +4,18 @@ Template Name: Custom Video Call Post Service page
 */
 ?>
 <?php
+//redirect none-logged user to homepage
+if(!is_user_logged_in())
+{
+    wp_redirect(site_url());
+}
+//redirect trainee to the list service page
+$custom_user_info=wp_get_current_user();
+if ( !in_array( 'coach', $custom_user_info->roles, true )) 
+{
+    wp_redirect(site_url('custom-service-list'));
+}
+
 get_header();
 ?>
 <?php 
@@ -15,13 +27,15 @@ $service_category_list=get_all_service_category();
         <form class="post-service-form" id="custom-post-service-form" name="custom-post-service-form">
             <input type="hidden" id="action" name="action" value="create_video_call_service">
             <input type="hidden" name="create_video_call_service_nonce" id="create_video_call_service_nonce" value="<?php echo wp_create_nonce('create_video_call_service_nonce'); ?>">
+            <input type="hidden" name="custom_service_currency_sign" id="custom_service_currency_sign" value="<?php echo carbon_get_theme_option('custom_video_call_stripe_currency_sign'); ?>">
+            <input type="hidden" name="custom_service_currency_code" id="custom_service_currency_code" value="<?php echo carbon_get_theme_option('custom_video_call_stripe_currency_code'); ?>">
             <div class="post-service-form-group">
                 <label>Service Title</label>
                 <input type="text" placeholder="Please enter the service title..." name="service_title" id="service_title" required="">
             </div>
 
             <div class="post-service-form-group">
-                <label>Service Price ($)</label>
+                <label>Service Price <?php echo '('.carbon_get_theme_option('custom_video_call_stripe_currency_sign').')'; ?></label>
                 <input type="text" placeholder="Please enter the price..." name="service_price" id="service_price" required="">
             </div>
 
@@ -33,7 +47,7 @@ $service_category_list=get_all_service_category();
             <div class="post-service-form-group">
                 <label>Service Category</label>
                 <select id="service_category" name="service_category" placeholder="Select a category" autocomplete="off">
-                    <option value="">Select a category...</option>
+                    <option value="">Select a category</option>
                         <?php foreach($service_category_list as $service_category): ?>
                             <option value="<?php echo $service_category->term_id ?>"><?php echo $service_category->name;?></option>
                         <?php endforeach; ?>

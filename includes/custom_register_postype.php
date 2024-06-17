@@ -67,3 +67,40 @@ add_action('init','add_video_call_service_category');
   }
   
  
+  add_action('init','register_custom_booking_postype');
+
+  function register_custom_booking_postype()
+{
+    $labels = array(
+        'name'               => _x( 'Booking', 'post type general name', 'textdomain' ),
+        'singular_name'      => _x( 'Booking', 'post type singular name', 'textdomain' ),
+        'menu_name'          => _x( 'Bookings', 'admin menu', 'textdomain' ),
+        'name_admin_bar'     => _x( 'Booking', 'add new on admin bar', 'textdomain' ),
+        'add_new'            => _x( 'Add New', 'Booking', 'textdomain' ),
+        'add_new_item'       => __( 'Add New Booking', 'textdomain' ),
+        'new_item'           => __( 'New Booking', 'textdomain' ),
+        'edit_item'          => __( 'Edit Booking', 'textdomain' ),
+        'view_item'          => __( 'View Booking', 'textdomain' ),
+        'all_items'          => __( 'All Booking', 'textdomain' ),
+        'search_items'       => __( 'Search Booking', 'textdomain' ),
+        'not_found'          => __( 'No Booking found', 'textdomain' ),
+        'not_found_in_trash' => __( 'No Booking found in trash', 'textdomain' ),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array( 'slug' => 'booking' ),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => null,
+        'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ), // Adjust as needed        
+    );
+
+    register_post_type( 'custom_booking', $args );
+}
