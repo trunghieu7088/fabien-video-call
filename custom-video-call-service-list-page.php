@@ -43,8 +43,18 @@ else
     $price_sort='';
 }
 
+
+if(isset($_GET['meettype']) && !empty($_GET['meettype']))
+{
+    $meettype_sort=$_GET['meettype'];
+}
+else
+{
+    $meettype_sort='';
+}
+
 $current_page = get_query_var('paged') ? get_query_var('paged') : 1;    
-$service_list=get_all_video_services($current_page, $search_string,$service_category_chosen,$date_sort,$price_sort);
+$service_list=get_all_video_services($current_page, $search_string,$service_category_chosen,$date_sort,$price_sort,$meettype_sort);
 $service_category_list=get_all_service_category();
 ?>
     <div class="container service-list-wrapper">
@@ -73,11 +83,16 @@ $service_category_list=get_all_service_category();
             </div>
 
             <div class="col-md-2 col-lg-2 col-sm-12 custom-filter-option custom-filter-price">                
-                <select id="service_sort_by_price" name="service_sort_by_price" class="custom-filter-service" placeholder="Sort by price" autocomplete="off">
+                <!-- <select id="service_sort_by_price" name="service_sort_by_price" class="custom-filter-service" placeholder="Sort by price" autocomplete="off">
                         <option value="">Sort by price</option>
                         <option <?php if($price_sort=='hightolow') echo 'selected'; ?> value="hightolow">Price: high to low</option>           
                         <option <?php if($price_sort=='lowtohigh') echo 'selected'; ?> value="lowtohigh">Price: low to high</option>           
-                </select>    
+                </select>  -->  
+                <select id="service_sort_by_meet_type" name="service_sort_by_meet_type" class="custom-filter-service" placeholder="Sort by meet type" autocomplete="off">
+                        <option value="">Sort by meet type</option>
+                        <option <?php if($meettype_sort=='face-to-face') echo 'selected'; ?> value="face-to-face">face-to-face</option>           
+                        <option <?php if($meettype_sort=='online-meeting') echo 'selected'; ?> value="online-meeting">Online</option>           
+                </select> 
                 <i class="fa fa-caret-down"></i>            
             </div>
 
@@ -112,6 +127,7 @@ $service_category_list=get_all_service_category();
                                     <span><i class="fa fa-calendar"></i> Published <?php echo $service_item['human_readable_time'];?></span>
                                     <span><i class="fa fa-list"></i> <?php echo $service_item['category'];?></span>
                                     <span><i class="fa fa-clock"></i> Duration <?php echo $service_item['duration'];?> mins</span>
+                                    <span><i class="fa fa-message"></i> <?php echo $service_item['meeting_type'];?></span>
                                 </div>
 
                                 <div class="custom-service-list-item-description">

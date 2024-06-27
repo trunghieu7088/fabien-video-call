@@ -121,6 +121,14 @@
             
         }        
 
+        //get busy time to pass to the calendar
+        var busy_time_list=[];
+        if($("#busy-time-list").length > 0)
+        {
+            busy_time_list= JSON.parse($("#busy-time-list").html());            
+        }
+        
+
         if($("#custom-video-calendar").length > 0 )
         {
             var calendarEL=document.querySelector('#custom-video-calendar');
@@ -133,18 +141,24 @@
                     right: 'prev,next',
                 },           
                 initialView: 'dayGridMonth',
-                contentHeight:"auto",      
-                events: [
+                contentHeight:"auto", 
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },    
+                events: busy_time_list,
+              /*  events: [
                     {
                       title  : 'Busy',
-                      start  : '2024-06-03T12:30:00',                     
+                      start  : '2024-06-03T12:30:00',                                           
                     },
                     {
                       title  : 'Busy',
                       start  : '2024-06-05T12:30:00',                    
-                    },
-                    
-                  ],
+                    },                    
+                  ],*/
+
                 dateClick: function(info) {
                    // console.log(info.dateStr);
                     //console.log(info);
@@ -294,10 +308,15 @@
               
             });         
             
-            new TomSelect("#service_sort_by_price",{
+            /*new TomSelect("#service_sort_by_price",{
                 create: true,
                
-            });         
+            });   */
+            
+            new TomSelect("#service_sort_by_meet_type",{
+                create: true,
+               
+            });   
 
         }
 
@@ -307,16 +326,18 @@
             let search_redirect_url='';
             let search_query='';
             let category_query='';
-            let price_query='';
+            //let price_query='';
+            let meetType_query='';
             let date_query='';
         }
         $("#submit-search-service").click(function(){
                 search_query='?search='+$("#search_string").val();
                 category_query='&category='+$("#service_category_selector").val();
                 date_query='&date='+$("#service_sort_by_time").val();
-                price_query='&price='+$("#service_sort_by_price").val();
+                //price_query='&price='+$("#service_sort_by_price").val();
+                meetType_query='&meettype='+$("#service_sort_by_meet_type").val();
 
-                search_redirect_url=$("#search_link").val()+search_query+category_query+date_query+price_query;
+                search_redirect_url=$("#search_link").val()+search_query+category_query+date_query+meetType_query;
                 window.location.href=search_redirect_url;
         });
      

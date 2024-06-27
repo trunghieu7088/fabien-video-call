@@ -39,6 +39,8 @@ function create_video_call_service_action()
         update_post_meta($video_call_service_created,'video_service_duration',$service_duration);
         update_post_meta($video_call_service_created,'video_service_duration_type','minutes');
 
+        update_post_meta($video_call_service_created,'meeting_type',$meeting_type);
+
         wp_set_post_terms($video_call_service_created,array((int)$service_category),'service_category');
 
         if(!empty($image_attach_id))

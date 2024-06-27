@@ -41,6 +41,7 @@ $current_service=convert_service_for_display($post);
                     <input type="hidden" name="service_id" id="service_id" value="<?php echo $current_service['ID']; ?>">
                     <input type="text" id="selected_date" name="selected_date" placeholder="Use Calendar to pick date (yyyy-mm-dd)" class="info-checkout-field" required="required">
                     <input id="selected-time-area" name="selected-time-area"  class="info-checkout-field">
+                    <input type="text" class="info-checkout-field" name="booking_note" id="booking_note" placeholder="The things you want trainee to notice" required="required">
                     <input type="text" class="info-checkout-field" name="billing_name" id="billing_name" placeholder="Billing Name" required="required">
                     <div id="custom-card-element" class="custom-form-card-element">
                         <!-- A Stripe Element will be inserted here. -->
@@ -55,9 +56,11 @@ $current_service=convert_service_for_display($post);
         <div class="col-md-4 col-lg-4 col-sm-12 single-video-right-section">
             <div class="custom-video-service-detail">
                 <p class="custom-video-service-price"><?php echo $current_service['price'].$current_service['currency_sign']; ?></p>
-                <p class="info-item"><i class="fa fa-clock"></i> <?php echo $current_service['human_readable_time']; ?></p>
+                <p class="info-item"><i class="fa fa-calendar"></i> <?php echo 'Published '.$current_service['human_readable_time']; ?></p>
                 <p class="info-item"><i class="fa fa-list"></i> <?php echo $current_service['category']; ?></p>
                 <p class="info-item"><i class="fa fa-user"></i> <a href="<?php echo $current_service['service_owner_url']; ?>"><?php echo $current_service['service_owner_name']; ?></a></p>
+                <p class="info-item"><i class="fa fa-clock"></i> <?php echo 'Duration: '.$current_service['duration'].' minutes'; ?></p>
+                <p class="info-item"><i class="fa fa-message"></i> <?php echo $current_service['meeting_type']; ?></p>
             </div>
         </div>
 

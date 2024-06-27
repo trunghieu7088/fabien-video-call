@@ -82,3 +82,64 @@ function get_all_bookings($page_number=1,$booking_owner,$owner_type)
     return $all_bookings_info;
 }
 
+function get_all_busy_time($video_service_ID)
+{
+   $args_all_booking=array('post_type' => 'custom_booking',
+   'posts_per_page' =>  -1,           
+   'post_status'   => 'publish',
+   'order'=>  'DESC',
+   'orderby'=> 'date',  
+   //add this meta query to make sure only get freelancers and complete profiles
+   'meta_query'=> array(
+                       array(
+                           'key'=>'service_id',
+                           'value'=>$video_service_ID,
+                           'compare'=>'=',
+
+                       ),
+                   ),               
+   );
+
+   $busy_time_collection=array();
+   $booking_collection=new WP_Query($args_all_booking);
+
+   if($booking_collection->have_posts())
+    {
+        while($booking_collection->have_posts())
+        {
+            $booking_collection->the_post();  
+            
+            $busy_date=get_post_meta(get_the_ID(),'booking_date',true);
+            $busy_time=get_post_meta(get_the_ID(),'booking_time',true);
+            
+            $converted_busy_time=DateTime::createFromFormat('h:i A', $busy_time);
+
+            $busy_datetime= $busy_date.'T'.$converted_busy_time->format('H:i:s');
+
+            $busy_time_collection[]=array(
+                                'title'=>'busy',
+                                'start'=>$busy_datetime,
+                                );            
+        }       
+
+    }
+    wp_reset_postdata(); 
+
+    return $busy_time_collection;
+
+}   
+
+add_action('wp_head','handling_busy_time_single_service',999);
+
+function handling_busy_time_single_service()
+{
+    global $post;
+    if(is_single() && 'videoservice' == get_post_type())
+    {
+        $busy_time=get_all_busy_time($post->ID);        
+        if(!empty($busy_time))
+        {                    
+            echo '<script type="text/template" id="busy-time-list">' . json_encode($busy_time) . '</script>';
+        }
+    }
+}

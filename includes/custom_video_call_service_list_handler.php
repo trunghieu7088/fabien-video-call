@@ -1,25 +1,14 @@
 <?php
 //get the services by custom condition
 
-function get_all_video_services($page_number,$search_string='',$service_category='',$date_sort='',$price_sort='')
+function get_all_video_services($page_number,$search_string='',$service_category='',$date_sort='',$price_sort='',$meettype_sort='')
 {
     global $post;
-    $service_args=array('post_type' => 'videoservice',
-    'posts_per_page' => 3, 
+    $number_service_each_pages=carbon_get_theme_option('custom_number_of_service_each_page');
+    $service_args=array('post_type' => 'videoservice',    
+    'posts_per_page' => $number_service_each_pages, 
     'paged'  =>$page_number,
-    'post_status' =>'publish',            
-   /* 'meta_query'     => array(
-        //turn on this later
-      //  'relation' => 'AND', 
-        array(
-            'key'   => 'custom_role',
-            'value' => 'expert',
-        ),        
-        array(
-            'key'   => 'is_custom_public',
-            'value' => 'true',
-        ),
-    ),     */      
+    'post_status' =>'publish',               
     );
 
     if(empty($date_sort) || $date_sort=='latest')
@@ -45,6 +34,15 @@ function get_all_video_services($page_number,$search_string='',$service_category
         $service_args['meta_key']='video_service_price'; 
         $service_args['order']='ASC';
         $service_args['orderby']='meta_value_num';    
+    }
+
+    if(!empty($meettype_sort))
+    {
+        $service_args['meta_query'][]=array(
+            'key'     => 'meeting_type',
+            'value'   => $meettype_sort,          
+            'compare' => '=',   
+        );
     }
 
     if(!empty($search_string))
@@ -136,6 +134,20 @@ function convert_service_for_display($service)
     $converted_service['currency_code']=get_post_meta($service->ID,'video_service_price_currency_code',true);
     $converted_service['currency_sign']=get_post_meta($service->ID,'video_service_price_currency_sign',true);
 
+    $converted_service['meeting_type']='';
+    $meeting_type=get_post_meta($service->ID,'meeting_type',true);
+
+    if($meeting_type=='face-to-face')
+    {
+        $converted_service['meeting_type']='face-to-face';
+    }
+    if($meeting_type=='online-meeting')
+    {
+        $converted_service['meeting_type']='Online meeting';
+    }
+
+
+
     return $converted_service;
 }
 
@@ -159,3 +171,18 @@ function timeAgo($datetime) {
     }
 }
 
+
+//add_action('init','testmet');
+
+function testmet()
+{
+  //  $user_id = intval($atts['id']);
+    $user = um_fetch_user( get_current_user_id() );
+    $name = um_user( 'display_name' );
+    $avatar = um_user( 'profile_photo', 80 );
+    $url = um_user_profile_url( um_user( 'ID' ) );
+
+    echo $name;
+    echo $avatar;
+    echo $url;
+}

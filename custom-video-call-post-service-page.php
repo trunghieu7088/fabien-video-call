@@ -40,9 +40,18 @@ $service_category_list=get_all_service_category();
             </div>
 
             <div class="post-service-form-group">
-                <label>Video Call Duration (minutes)</label>
+                <label>Duration (minutes)</label>
                 <input type="text" placeholder="Please enter the minutes..." name="service_duration" id="service_duration" required="">
-            </div>            
+            </div>   
+            
+            <div class="post-service-form-group">
+                <label>Meeting Type</label>
+                <select id="meeting_type" name="meeting_type" placeholder="Select an option" autocomplete="off">                    
+                    <option value="face-to-face">Face to Face</option>
+                    <option value="online-meeting">Online Meeting</option>
+                </select>   
+            </div>
+
 
             <div class="post-service-form-group">
                 <label>Service Category</label>

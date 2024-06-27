@@ -22,6 +22,7 @@ function custom_video_call_settings()
         Field::make('text', 'custom_video_call_stripe_currency_sign', __('Currency Sign'))->set_default_value('$'),      
     ))
     ->add_tab('General Settings', array(
+        Field::make('text', 'custom_number_of_service_each_page', __('Number of service each pages'))->set_default_value(20),      
         Field::make( 'file', 'custom_video_call_default_cover_img_service', __( 'Default Image for service' ) )->set_type( array('image' ) )->set_value_type( 'url' ),
     
     ))
