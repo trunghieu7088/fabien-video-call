@@ -47,10 +47,15 @@ $service_category_list=get_all_service_category();
             <div class="post-service-form-group">
                 <label>Meeting Type</label>
                 <select id="meeting_type" name="meeting_type" placeholder="Select an option" autocomplete="off">                    
-                    <option value="face-to-face">Face to Face</option>
                     <option value="online-meeting">Online Meeting</option>
+                    <option value="face-to-face">Face to Face</option>                   
                 </select>   
             </div>
+
+            <div class="post-service-form-group" style="display:none;">
+                <label>Location</label>
+                <input type="text" placeholder="Please enter detailed location" name="meettype_location" id="meettype_location">
+            </div>   
 
 
             <div class="post-service-form-group">
@@ -63,6 +68,7 @@ $service_category_list=get_all_service_category();
                 </select>
             </div>
 
+          
           
 
             <div class="post-service-form-group">

@@ -1,6 +1,19 @@
 (function ($) {
     $(document).ready(function () {   
 
+        $("#meeting_type").change(function(){
+            if($("#meeting_type").val()=='face-to-face')
+            {
+                $("#meettype_location").parent().css('display','block');
+                $("#meettype_location").attr('required','required');
+            }
+            else
+            {
+                $("#meettype_location").parent().css('display','none');
+                $("#meettype_location").removeAttr('required');
+            }
+        });
+
         $("#custom-post-service-form").submit(function(event){            
             event.preventDefault(); 
             var create_service_formdata = $("#custom-post-service-form").serialize();  
@@ -269,6 +282,9 @@
                                                 service_id:$("#service_id").val(),
                                                 booking_date:$("#selected_date").val(),
                                                 booking_time:$("#selected_time").val(),
+                                                booking_note:$("#booking_note").val(),
+                                                booking_type:$("#booking_type").val(),
+                                                booking_location:$("#booking_location").val(),
                                                 
                                             },
                                             success: function(bookingResponse) {   
@@ -342,6 +358,27 @@
         });
      
 
+        if($('.booking-filters-area').length > 0)
+        {
+            let booking_filter_url='';
+
+            let booking_sort_meettype='';
+            let booking_status_filter='';
+            let booking_sort_filter='';
+          
+        }
+        $("#booking_filter_search").click(function(){
+            booking_sort_meettype='?type='+$('#booking_sort_meettype').val();
+
+            booking_status_filter='&status='+$('#booking_status_filter').val();
+
+            booking_sort_filter='&order='+$('#booking_sort_filter').val();
+
+            booking_filter_url=$("#booking-filter-base-link").val()+booking_sort_meettype+booking_status_filter+booking_sort_filter;
+            
+            window.location.href=booking_filter_url;
+
+        });
 
 
 

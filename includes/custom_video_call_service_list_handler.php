@@ -83,10 +83,15 @@ function convert_service_for_display($service)
 {   
 
     $service_owner=get_user_by('ID',$service->post_author);
-    $converted_service['ID']=$service->ID;
+    $converted_service['ID']=$service->ID;    
+    
+    //initialize UM info
+    $custom_um_user = um_fetch_user( $service_owner->ID );
+
 
     $converted_service['title']=$service->post_title;
     $converted_service['description']=$service->post_content;
+    $converted_service['short_description']=wp_trim_words($service->post_content,35,'...');
     $converted_service['service_slug']=$service->post_name;
     $converted_service['service_single_link']=$service->guid;
     
@@ -125,36 +130,40 @@ function convert_service_for_display($service)
     $converted_service['human_readable_time']=timeAgo($service->post_date);
 
     //display name--> maybe change to match with plugin UM
-    $converted_service['service_owner_name']='Posted by '.$service_owner->display_name;
-    $converted_service['service_owner_url']= get_author_posts_url($service_owner->ID);    
+    $converted_service['service_owner_name']='Posted by '.um_user( 'display_name' );
+    $avatar=um_get_user_avatar_url( $service_owner->ID, '80' );
+    $converted_service['avatar']=$avatar;   
+    //$converted_service['service_owner_url']= um_user_profile_url( $service_owner->ID);
+    $converted_service['service_owner_url']=site_url('/profil/').get_user_meta($service_owner->ID,'um_user_profile_url_slug_user_login',true);    
     $converted_service['service_owner_ID']= $service_owner->ID;
-    $avatar=get_avatar_url($service_owner->ID, ['size' => '40']);
-
-    $converted_service['avatar']=$avatar;
+   
+   
     $converted_service['currency_code']=get_post_meta($service->ID,'video_service_price_currency_code',true);
     $converted_service['currency_sign']=get_post_meta($service->ID,'video_service_price_currency_sign',true);
 
     $converted_service['meeting_type']='';
     $meeting_type=get_post_meta($service->ID,'meeting_type',true);
+    $converted_service['meeting_type_logic_value']= $meeting_type;
 
     if($meeting_type=='face-to-face')
     {
         $converted_service['meeting_type']='face-to-face';
+        $converted_service['meettype_location']=get_post_meta($service->ID,'meettype_location',true);
     }
     if($meeting_type=='online-meeting')
     {
         $converted_service['meeting_type']='Online meeting';
+        $converted_service['meettype_location']='';
     }
 
-
-
+    um_reset_user();
     return $converted_service;
 }
 
 //handling human readable time
 
 function timeAgo($datetime) {
-    $now = new DateTime();
+    $now = new DateTime(current_time('mysql'));
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
 
@@ -166,23 +175,60 @@ function timeAgo($datetime) {
         return $diff->d . ' day' . ($diff->d > 1 ? 's' : '') . ' ago';
     } elseif ($diff->h > 0) {
         return $diff->h . ' hour' . ($diff->h > 1 ? 's' : '') . ' ago';
+    } elseif ($diff->i > 0) {
+        return $diff->i . ' minute' . ($diff->i > 1 ? 's' : '') . ' ago';
+    } elseif ($diff->s > 0) {
+        return $diff->s . ' second' . ($diff->s > 1 ? 's' : '') . ' ago';
     } else {
         return 'just now';
     }
 }
 
 
-//add_action('init','testmet');
+//add_action('init','testtime');
 
-function testmet()
+function testtime()
 {
-  //  $user_id = intval($atts['id']);
-    $user = um_fetch_user( get_current_user_id() );
-    $name = um_user( 'display_name' );
-    $avatar = um_user( 'profile_photo', 80 );
-    $url = um_user_profile_url( um_user( 'ID' ) );
+    echo current_time( 'd-m-y' );
+    echo '<br>';
+    echo current_time('H:i:s');
+    echo '<br>';
+    echo current_time('h:i A');
+    echo '<br>';
+    $booking_date = '2024-06-26';
+$booking_time = '04:00 PM';
+$status = get_booking_status($booking_date, $booking_time);
 
-    echo $name;
-    echo $avatar;
-    echo $url;
+echo "The booking status is: " . $status;
 }
+
+function get_booking_status($booking_date, $booking_time) {
+    // Combine the date and time
+    $datetime_str = $booking_date . ' ' . $booking_time;
+    $booking_datetime = new DateTime($datetime_str);
+
+    // Get the current time
+    $current_datetime = new DateTime(current_time('mysql'));
+
+    // Calculate the difference in hours
+    $interval = $current_datetime->diff($booking_datetime);
+    $hours_difference = ($interval->days * 24) + $interval->h + ($interval->i / 60);
+    
+    // Determine status
+    if ($booking_datetime > $current_datetime) {
+        return 'upcoming';
+    } elseif ($hours_difference <= 3) {
+        return 'inprogress';
+    } else {
+        return 'overdue';
+    }
+}
+
+// Example usage:
+/*
+$booking_date = '2024-06-14';
+$booking_time = '01:00 AM';
+$status = get_booking_status($booking_date, $booking_time);
+
+echo "The booking status is: " . $status;
+*/

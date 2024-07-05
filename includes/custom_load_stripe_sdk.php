@@ -183,6 +183,10 @@ function custom_video_service_complete_order_init()
 
     update_post_meta($booking_created,'booking_note',$booking_note);
 
+    update_post_meta($booking_created,'booking_type',$booking_type);
+
+    update_post_meta($booking_created,'booking_location',$booking_location);
+
     $video_room_id=uniqid(rand(1,10000));
     update_post_meta($booking_created,'booking_video_call_room_id',$video_room_id);
 

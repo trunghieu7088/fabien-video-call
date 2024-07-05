@@ -7,51 +7,16 @@ Template Name: Custom Video Call Service List page
 get_header();
 ?>
 <?php 
-if(isset($_GET['search']) && !empty($_GET['search']))
-{
-    $search_string=$_GET['search'];
-}
-else
-{
-    $search_string='';
-}
 
-if(isset($_GET['category']) && !empty($_GET['category']))
-{
-    $service_category_chosen=$_GET['category'];
-}
-else
-{
-    $service_category_chosen='';
-}
+$search_string = isset($_GET['search']) ? $_GET['search'] : '';
 
-if(isset($_GET['date']) && !empty($_GET['date']))
-{
-    $date_sort=$_GET['date'];
-}
-else
-{
-    $date_sort='';
-}
+$service_category_chosen = isset($_GET['category']) ? $_GET['category'] : '';
 
-if(isset($_GET['price']) && !empty($_GET['price']))
-{
-    $price_sort=$_GET['price'];
-}
-else
-{
-    $price_sort='';
-}
+$date_sort = isset($_GET['date']) ? $_GET['date'] : '';
 
+$price_sort = isset($_GET['price']) ? $_GET['price'] : '';
 
-if(isset($_GET['meettype']) && !empty($_GET['meettype']))
-{
-    $meettype_sort=$_GET['meettype'];
-}
-else
-{
-    $meettype_sort='';
-}
+$meettype_sort = isset($_GET['meettype']) ? $_GET['meettype'] : '';
 
 $current_page = get_query_var('paged') ? get_query_var('paged') : 1;    
 $service_list=get_all_video_services($current_page, $search_string,$service_category_chosen,$date_sort,$price_sort,$meettype_sort);
@@ -128,14 +93,17 @@ $service_category_list=get_all_service_category();
                                     <span><i class="fa fa-list"></i> <?php echo $service_item['category'];?></span>
                                     <span><i class="fa fa-clock"></i> Duration <?php echo $service_item['duration'];?> mins</span>
                                     <span><i class="fa fa-message"></i> <?php echo $service_item['meeting_type'];?></span>
+                                    <?php if($service_item['meeting_type']=='face-to-face'): ?>
+                                        <span><i class="fa fa-map-marker"></i> <?php echo $service_item['meettype_location'];?></span>
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="custom-service-list-item-description">
-                                    <?php echo $service_item['description']; ?>
+                                    <?php echo $service_item['short_description']; ?>
                                 </div>
 
-                                <div class="custom-service-list-item-author">
-                                    <a href="<?php echo $service_item['service_owner_url'];?>">
+                                <div class="custom-service-list-item-author">                                
+                                    <a target="_blank" href="<?php echo $service_item['service_owner_url'];?>">
                                         <?php echo $service_item['service_owner_name']; ?>
                                         <img src="<?php echo $service_item['avatar']; ?>">
                                     </a>

@@ -168,10 +168,7 @@ add_action('wp_loaded','addRequiredPage');
 function addRequiredPage()
 {
     //create define role page
-    custom_check_and_create_page('custom-video-call-define-role.php','definerole');
-
-    //create my profile page
-    custom_check_and_create_page('custom-video-call-profile-page.php','custom-profile');
+    custom_check_and_create_page('custom-video-call-define-role.php','definerole');    
 
     //create post service page
     custom_check_and_create_page('custom-video-call-post-service-page.php','custom-post-service');

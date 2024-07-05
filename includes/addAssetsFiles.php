@@ -31,9 +31,7 @@ function addboostrapfiles()
         wp_enqueue_script('plupload-all');
     }
     
- 
-    
-    //wp_enqueue_script('zegocloud-creating-room', CUSTOM_VIDEO_CALL_URL.'assets/zegocloud/video-call-create-room-handling.js', array('jquery'), SHARING_CUSTOM_VIDEO_CALL_VERSION,true);        
+     
     if(is_page_template('custom-video-call-room.php'))
     {
         wp_enqueue_script('zegocloud-js-lib', CUSTOM_VIDEO_CALL_URL.'assets/zegocloud/zego-uikit-prebuilt.js', array(), SHARING_CUSTOM_VIDEO_CALL_VERSION,true);        
