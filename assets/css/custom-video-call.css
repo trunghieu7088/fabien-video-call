@@ -1,26 +1,25 @@
 /* define role page */
 .define-role-block
 {
-    padding:10px 10px;
-    margin-bottom: 380px;
- 
+    padding:10px 10px;    
+    border:1px solid #00BFFF;
+    border-radius: 5px;    
 }
 .roleTitle
 {
-    font-size:2.5em;
-    text-align: center;
+    font-size:16px;    
 }
 
 .define-role-form-block
 {
     display:flex;
-    justify-content: center;
-    flex-direction: column;
+    justify-content: flex-start;
+    flex-direction: column;  
 }
 .submit-button-container
 {
     display:flex;
-    justify-content: center;
+    justify-content: flex-start;
     margin-top:15px;
 }
 .define-role-form-block button
@@ -32,21 +31,20 @@
 .define-role-form-block p
 {    
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;    
 }
 
 .define-role-form-block p strong
 {
-    font-size:1.5em;
-    margin-right:20px;
+    font-size:1.2em;    
 }
 
 .define-role-form-block input[type="radio"]
 {
-    width: 30px;
-    height:30px;
-    margin-right:15px;
+    width: 15px;
+    height:15px;
+    
 }
 
 .define-role-form-block span
@@ -327,7 +325,96 @@
     margin-bottom:15px !important;
     margin-left:-15px !important;
     margin-right:-15px !important;
+    display:flex;
+    justify-content: space-between;
 }
+.publish-unpublish-btn,
+.publish-unpublish-btn:hover,
+.publish-unpublish-btn:focus
+{
+    padding:5px;
+    font-size:14px;
+    background-color: #ffffff;
+    color:#d3d3d3;
+    margin-left:10px;
+    border:0px;
+    border:1px solid #d3d3d3;
+    text-transform: capitalize;
+}
+.my-service-container
+{
+    display: flex;
+    align-items: center;
+}
+.my-service-container  .myservice-text
+{
+    font-size:16px !important; 
+}
+/* switch button */
+.custom-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-right:5px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .custom-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .switch-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .switch-slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .switch-slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .switch-slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .switch-slider.round {
+    border-radius: 34px;
+  }
+  
+  .switch-slider.round:before {
+    border-radius: 50%;
+  }
+
+/* end switch button */
 .service-custom-filters-container
 {
     margin:0 !important;
@@ -825,6 +912,7 @@
     padding:5px !important;    
     justify-content: center;
 }
+
 .custom-actions .action-link
 {
     padding:10px;
@@ -833,8 +921,13 @@
     box-shadow: 0px 4px 8px rgba(188, 207, 219, 0.65);    
     text-transform: capitalize; 
     margin-right:10px;  
-    font-size:16px !important;     
-    margin-bottom: 10px;
+    font-size:16px !important;         
+/*    margin-bottom: 10px; */
+}
+.custom-actions-right-column
+{
+    margin-top:0px !important;
+    justify-content: flex-start !important;
 }
 .booking-filters-area
 {
@@ -878,22 +971,31 @@
 
 /* stripe connect container */
 .stripe-connect-container
-{
-    min-height:600px;
-    text-align: center;
-    padding:40px 0px;    
+{     
+    margin-top:20px !important;
+    border-radius: 5px;
+    border:1px solid #00BFFF;
+    padding:10px !important;
+    display: flex;
+    flex-direction: column;
 }
 .stripe-connect-title
 {
-    font-size:24px !important;    
+    font-size:16px !important;    
+    padding:0 !important;
+    display:block;
 }
 .stripe-connect-link
 {
-    font-size:18px;
+    font-size:16px;
     color:#ffffff !important;
     background-color: #00BFFF !important;
-    padding:10px 20px;
+    padding:5px 10px;
     border-radius: 10px;
+    text-decoration: none !important;
+    width:20%;
+    text-align: center;
+    margin-top: 10px;
 }
 .connect-stripe-result
 {

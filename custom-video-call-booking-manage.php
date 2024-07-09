@@ -78,7 +78,7 @@ $status_collection=init_booking_status();
         <?php foreach($booking_list['booking_list'] as $booking_item): ?>
             <?php
                 $collection_color=set_color_base_on_status($booking_item['booking_status']); 
-                $display_action_btns=handling_display_join_cancel_buttons($booking_item['booking_status'],$booking_item['booking_type'],$booking_item['booking_room_id']);
+                $display_action_btns=handling_display_join_cancel_buttons($booking_item['booking_status'],$booking_item['booking_type'],$booking_item['booking_room_id'],$booking_item['ID']);
             
             ?>
         <!-- booking item -->
@@ -148,13 +148,17 @@ $status_collection=init_booking_status();
                     <div class="item-column service-title">
                        <a target="_blank" href="<?php echo $booking_item['service_url']; ?>"> <?php echo $booking_item['title']; ?></a>
                     </div>        
-                    <div class="item-column service-description">
-                        Notification Message: <?php echo $booking_item['booking_note']; ?>                        
+                    <div class="item-column service-description">                        
+                        <p  style="margin:0;"><strong>Notification Message: </strong><?php echo $booking_item['booking_note']; ?></p>
                         <p><i class="fa fa-message"></i> <strong>Type:</strong> <?php echo $booking_item['booking_type']; ?></p>
                         <?php if($booking_item['booking_type']=='face-to-face'): ?>
                             <p><i class="fa fa-map-marker"></i> <strong>Location:</strong> <?php echo $booking_item['booking_location']; ?></p>
                         <?php endif; ?>
                     </div>   
+
+                    <div class="item-column custom-actions custom-actions-right-column">                       
+                        <?php echo handling_display_join_cancel_buttons('only_join_btn_'.$booking_item['booking_status'],$booking_item['booking_type'],$booking_item['booking_room_id'],$booking_item['ID']); ?>                            
+                    </div>
                    
                 </div>
 

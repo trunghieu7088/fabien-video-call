@@ -1,23 +1,15 @@
 <?php
+
 function convert_booking_item($booking_item)
 { 
 
     $converted_booking['ID']=$booking_item->ID;
     $converted_booking['description']=$booking_item->post_content;
+    $converted_booking['short_description']=wp_trim_words($booking_item->post_content,35,'...');
     $converted_booking['title']=$booking_item->post_title;
 
     $coach=get_user_by('ID',get_post_meta($booking_item->ID,'coach_id',true));
     $trainee=get_user_by('ID',get_post_meta($booking_item->ID,'trainee_id',true));
-
-    //initialize UM info
-    //$coach_um_user = um_fetch_user( $coach );
-
-    //display name--> maybe change to match with plugin UM
-   // $converted_service['service_owner_name']='Posted by '.um_user( 'display_name' );
-    //$avatar=um_get_user_avatar_url( $service_owner->ID, '80' );
-    //$converted_service['avatar']=$avatar;   
-    //$converted_service['service_owner_url']= um_user_profile_url( $service_owner->ID);
-     
 
     $converted_booking['coach_id']=$coach->ID;   
     $converted_booking['coach_name']=um_get_display_name($coach->ID);
@@ -219,34 +211,49 @@ function set_color_base_on_status($status)
     return $color_collection;
 }
 
-function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_id)
+function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_id,$booking_id='')
 {
     $button_html_content='';
+    $cancel_reason='';
+    $cancel_button='<a class="action-link cancel-btn-class" data-cancel-id="'.$booking_id.'" href="javascript:void(0)"><i class="fa fa-circle-xmark"></i>Cancel</a>';
+    
+    if($status=='cancelled')
+    {
+        $cancel_reason=get_post_meta($booking_id,'cancel_reason',true);
+    }
+    $done_button='<a href="javascript:void(0)" data-complete-id="'.$booking_id.'" class="action-link complete-booking-btn"><i class="fa fa-check-circle"></i>'.'Done'.'</a>';
+   
+    $join_button='<a class="action-link" href="'.site_url('video-call').'/?videoroomid='.$booking_room_id.'">';
+    $join_button.='<i class="fa fa-right-to-bracket"></i>'.'Join'.'</a>';
+    
     if($meet_type=='face-to-face')
     {
         switch ($status) {
             case 'upcoming':
-                $button_html_content='<a class="action-link cancel-btn-class" href="#"><i class="fa fa-circle-xmark"></i> Cancel</a>';
+                $button_html_content.=$cancel_button;
             break;
 
             case 'cancelled':
-                $button_html_content='Cancel reason';
+                $button_html_content=$cancel_reason;
             break;
 
             case 'inprogress':
-                $button_html_content.='<a href="#" class="action-link"><i class="fa fa-check-circle"></i>'.'complete'.'</a>';
-                $button_html_content.='<a class="action-link cancel-btn-class" href="#"><i class="fa fa-circle-xmark"></i> Cancel</a>';
+                $button_html_content.=$done_button;
+                $button_html_content.=$cancel_button;
             break;
             
             case 'overdue':
-                $button_html_content.='<a href="#" class="action-link"><i class="fa fa-check-circle"></i>'.'complete'.'</a>';
-                $button_html_content.='<a class="action-link cancel-btn-class" href="#"><i class="fa fa-circle-xmark"></i> Cancel</a>';
+                $button_html_content.=$done_button;
+                $button_html_content.=$cancel_button;
             break;
 
             case 'completed':                
                 $button_html_content='';
             break;
-              
+            
+            default:
+                $button_html_content='';
+            break;
           }
                     
     }
@@ -254,29 +261,40 @@ function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_i
     {
         switch ($status) {
             case 'upcoming':     
-                $button_html_content='<a class="action-link cancel-btn-class" href="#"><i class="fa fa-circle-xmark"></i> Cancel</a>';
+                $button_html_content.=$cancel_button;
             break;
 
             case 'cancelled':
-              $button_html_content='Cancel reason';
+              $button_html_content=$cancel_reason;
             break;
 
             case 'inprogress':
-                $button_html_content='<a href="#" class="action-link"><i class="fa fa-check-circle"></i>'.'complete'.'</a>';
-                $button_html_content.='<a class="action-link" href="'.site_url('video-call').'/?videoroomid='.$booking_room_id.'">';
-                $button_html_content.='<i class="fa fa-right-to-bracket"></i>'.'Join'.'</a>';
-                $button_html_content.='<a class="action-link cancel-btn-class" href="#"><i class="fa fa-circle-xmark"></i> Cancel</a>';                
+                $button_html_content=$done_button;              
+                $button_html_content.=$cancel_button;
+                
             break;
             
             case 'overdue':
-                $button_html_content='<a href="#" class="action-link"><i class="fa fa-check-circle"></i>'.'complete'.'</a>';
-                $button_html_content.='<a class="action-link" href="'.site_url('video-call').'/?videoroomid='.$booking_room_id.'">';
-                $button_html_content.='<i class="fa fa-right-to-bracket"></i>'.'Join'.'</a>';
-                $button_html_content.='<a class="action-link cancel-btn-class" href="#"><i class="fa fa-circle-xmark"></i> Cancel</a>';
+                $button_html_content=$done_button;             
+                $button_html_content.=$cancel_button;                
+                
             break;
 
             case 'completed':
                $button_html_content='';
+            break;
+
+            default:
+                $filtered_status= str_replace(['only_join_btn_', 'btn_'], '', $status);
+                if($filtered_status=='overdue' || $filtered_status=='inprogress')
+                {
+                    $button_html_content=$join_button;                 
+                }
+                else
+                {
+                    $button_html_content='';
+                }
+             
             break;
               
           }

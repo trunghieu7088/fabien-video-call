@@ -24,4 +24,13 @@ function custom_video_call_crb_load() {
     }
 }
 
+add_action( 'after_setup_theme', 'init_zego_cloud_token_lib',990,0 );
+function init_zego_cloud_token_lib() {    
+
+    require_once CUSTOM_VIDEO_CALL_PATH . '/includes/zegotoken/auto_loader.php';
+}
+
+
+
+
 require('custom_video_call_room.php');

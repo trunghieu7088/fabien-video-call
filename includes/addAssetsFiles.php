@@ -42,6 +42,19 @@ function addboostrapfiles()
 }
 
 
+add_action('wp_enqueue_scripts', 'add_sweetalert',999);
+
+function add_sweetalert()
+{
+    wp_enqueue_script('sweetalert-js', CUSTOM_VIDEO_CALL_URL.'/assets/sweetalert/sweetalert.js', array(
+        'jquery',          
+    ), '1.0', true); 
+
+    wp_enqueue_style('sweetalert-css', CUSTOM_VIDEO_CALL_URL.'/assets/sweetalert/sweetalert.css');
+
+}
+
+
 add_action('wp_enqueue_scripts', 'importTomSelect',999);
 function importTomSelect()
 {

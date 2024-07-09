@@ -18,12 +18,25 @@ $price_sort = isset($_GET['price']) ? $_GET['price'] : '';
 
 $meettype_sort = isset($_GET['meettype']) ? $_GET['meettype'] : '';
 
+$only_myservice= isset($_GET['myservice']) ? $_GET['myservice'] : '';
+
 $current_page = get_query_var('paged') ? get_query_var('paged') : 1;    
-$service_list=get_all_video_services($current_page, $search_string,$service_category_chosen,$date_sort,$price_sort,$meettype_sort);
+$service_list=get_all_video_services($current_page, $search_string,$service_category_chosen,$date_sort,$price_sort,$meettype_sort,$only_myservice);
 $service_category_list=get_all_service_category();
 ?>
     <div class="container service-list-wrapper">
-        <p class="all-services-title">All Services</p>
+        <div class="all-services-title">
+            <span class="all-service-text-title">All Services</span>
+            <div class="my-service-container">                
+                <?php if(determine_role_by_id(get_current_user_id(),'coach')): ?>
+                    <label class="custom-switch">
+                        <input type="checkbox" id="only_my_service" name="only_my_service" value="myservice" <?php if($only_myservice=='yes') echo 'checked'; ?>> 
+                        <span class="switch-slider round"></span>
+                    </label>                
+                    <span class="myservice-text">Only my service</span>   
+                <?php endif; ?>             
+            </div>
+        </div>
         <div class="row service-custom-filters-container">           
             <div class="col-md-3 col-lg-3 col-sm-12 custom-filter-option custom-filter-search">
                 <i class="fa fa-search"></i> <input type="text" id="search_string" name="search_string" placeholder="Search service" value="<?php echo $search_string; ?>">
@@ -86,6 +99,15 @@ $service_category_list=get_all_service_category();
                                     <a href="<?php echo $service_item['service_single_link']; ?>">
                                         <?php echo $service_item['title'].' | '.'<strong>'.$service_item['price'].$service_item['currency_sign'].'</strong>'; ?>
                                     </a>
+                                    <?php if($service_item['service_owner_ID'] == get_current_user_id()): ?>
+                                    <button class="publish-unpublish-btn custom_btn_publish" data-service-id="<?php echo $service_item['ID']; ?>">
+                                        <?php if($service_item['service_status']=='publish'): ?>
+                                            <i class="fa fa-eye-slash"></i> Unpublish service  
+                                        <?php else: ?>
+                                            <i class="fa fa-eye"></i> Publish service
+                                        <?php endif; ?>
+                                    </button>
+                                    <?php endif; ?>
                                 </p>
 
                                 <div class="custom-service-list-item-info">

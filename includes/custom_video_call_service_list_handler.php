@@ -1,7 +1,7 @@
 <?php
 //get the services by custom condition
 
-function get_all_video_services($page_number,$search_string='',$service_category='',$date_sort='',$price_sort='',$meettype_sort='')
+function get_all_video_services($page_number,$search_string='',$service_category='',$date_sort='',$price_sort='',$meettype_sort='',$only_myservice='no')
 {
     global $post;
     $number_service_each_pages=carbon_get_theme_option('custom_number_of_service_each_page');
@@ -10,6 +10,13 @@ function get_all_video_services($page_number,$search_string='',$service_category
     'paged'  =>$page_number,
     'post_status' =>'publish',               
     );
+
+    if($only_myservice=='yes')
+    {
+        $service_args['author']=get_current_user_id();
+        //only the service owner can see their unpublished services
+        $service_args['post_status']=array('publish','pending','unpublished');
+    }
 
     if(empty($date_sort) || $date_sort=='latest')
     {
@@ -94,6 +101,7 @@ function convert_service_for_display($service)
     $converted_service['short_description']=wp_trim_words($service->post_content,35,'...');
     $converted_service['service_slug']=$service->post_name;
     $converted_service['service_single_link']=$service->guid;
+    $converted_service['service_status']=$service->post_status;
     
     $attached_image=get_attached_media('image',$service->ID);
     if($attached_image)
@@ -185,23 +193,6 @@ function timeAgo($datetime) {
 }
 
 
-//add_action('init','testtime');
-
-function testtime()
-{
-    echo current_time( 'd-m-y' );
-    echo '<br>';
-    echo current_time('H:i:s');
-    echo '<br>';
-    echo current_time('h:i A');
-    echo '<br>';
-    $booking_date = '2024-06-26';
-$booking_time = '04:00 PM';
-$status = get_booking_status($booking_date, $booking_time);
-
-echo "The booking status is: " . $status;
-}
-
 function get_booking_status($booking_date, $booking_time) {
     // Combine the date and time
     $datetime_str = $booking_date . ' ' . $booking_time;
@@ -224,11 +215,45 @@ function get_booking_status($booking_date, $booking_time) {
     }
 }
 
-// Example usage:
-/*
-$booking_date = '2024-06-14';
-$booking_time = '01:00 AM';
-$status = get_booking_status($booking_date, $booking_time);
+add_action('wp_ajax_publish_unpublish_service','publish_unpublish_service_action');
 
-echo "The booking status is: " . $status;
-*/
+function publish_unpublish_service_action()
+{
+    if(!is_user_logged_in())
+    {
+        die('');        
+    }
+    extract($_POST);
+    $service_info=get_post($service_id);
+    
+    //only update status if the service exist and the right owner is taking action
+    if ($service_info && $service_info->post_author == get_current_user_id()) 
+    {
+        $update_service_info=array('ID'=>$service_id,'post_status'=>'publish');
+        if($service_info->post_status=='publish')
+        {
+            $update_service_info['post_status']='pending';
+        }
+        else
+        {
+            $update_service_info['post_status']='publish';
+        }
+        $update_result=wp_update_post($update_service_info);
+        if($update_result && !is_wp_error($update_result))
+        {
+            $data['success']='true';
+            $data['message']='Updated status successfully';
+        }                
+        else
+        {
+            $data['success']='false';
+            $data['message']='Failed to update status';
+        } 
+    } 
+    else 
+    {
+        $data['success']='false';
+        $data['message']='No posts found !';
+    }
+    wp_send_json($data);
+}   

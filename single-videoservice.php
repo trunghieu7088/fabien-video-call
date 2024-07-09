@@ -10,7 +10,7 @@ $current_service=convert_service_for_display($post);
     <div class="row">
         <div class="col-md-8 col-lg-8 col-sm-12 single-video-left-section">
             <div class="custom-video-service-title">
-               <p><?php echo $current_service['title'] ?></p>
+               <p><?php echo $current_service['title'] ?></p>                                                    
             </div>
 
             <div class="custom-video-service-image">
@@ -21,13 +21,14 @@ $current_service=convert_service_for_display($post);
                 <?php echo $current_service['description']; ?>
             </div>
             
+            <?php if(is_user_logged_in() && get_current_user_id()!== $current_service['service_owner_ID']):?>
             <div class="custom-video-service-calendar">
                 <div id="custom-video-calendar">
 
                 </div>
             </div>
 
-
+            
             <div class="custom-video-service-checkout-form-wrapper">
                 <form id="custom-video-service-checkout-form" name="custom-video-service-checkout-form" action="">                    
                     <p class="video-call-checkout-title">Book a Video Call</p>
@@ -52,6 +53,7 @@ $current_service=convert_service_for_display($post);
                     <button type="submit" id="custom-video-service-checkout-btn" class="custom-video-service-checkout-btn">Order Service <?php echo $current_service['price'].'$'; ?></button>
                 </form>
             </div>
+            <?php endif; ?>
 
         </div>
 
@@ -66,6 +68,18 @@ $current_service=convert_service_for_display($post);
                 <?php if($current_service['meeting_type']=='face-to-face'): ?>
                     <p class="info-item"><i class="fa fa-map-marker"></i> <?php echo $current_service['meettype_location']; ?></p>
                 <?php endif; ?>
+
+                <p class="info-item">
+                <?php if(get_current_user_id()==$current_service['service_owner_ID']): ?>
+                        <button class="publish-unpublish-btn custom_btn_publish" data-service-id="<?php echo $current_service['ID']; ?>">
+                            <?php if($current_service['service_status']=='publish'): ?>
+                                <i class="fa fa-eye-slash"></i> Unpublish service  
+                            <?php else: ?>
+                                <i class="fa fa-eye"></i> Publish service
+                            <?php endif; ?>
+                        </button> 
+                    <?php endif; ?> 
+                </p>        
             </div>
         </div>
 

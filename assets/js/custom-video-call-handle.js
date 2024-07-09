@@ -171,10 +171,18 @@
                       start  : '2024-06-05T12:30:00',                    
                     },                    
                   ],*/
-
+                
                 dateClick: function(info) {
                    // console.log(info.dateStr);
                     //console.log(info);
+
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
+        
+                    if (info.date < today) {
+                        alert("You cannot choose a past date.");
+                        return; 
+                    }
                     
                     $("#selected_date").val(info.dateStr);
                     let remove_old_selected=document.querySelector(".custom_date_chosen"); 
@@ -345,6 +353,9 @@
             //let price_query='';
             let meetType_query='';
             let date_query='';
+
+            let only_my_service_query='';
+
         }
         $("#submit-search-service").click(function(){
                 search_query='?search='+$("#search_string").val();
@@ -353,7 +364,16 @@
                 //price_query='&price='+$("#service_sort_by_price").val();
                 meetType_query='&meettype='+$("#service_sort_by_meet_type").val();
 
-                search_redirect_url=$("#search_link").val()+search_query+category_query+date_query+meetType_query;
+                if($("#only_my_service").is(":checked"))
+                {
+                    only_my_service_query='&myservice=yes';
+                }
+                else
+                {
+                    only_my_service_query='&myservice=no';
+                }
+
+                search_redirect_url=$("#search_link").val()+search_query+category_query+date_query+meetType_query+only_my_service_query;
                 window.location.href=search_redirect_url;
         });
      
@@ -381,6 +401,150 @@
         });
 
 
+        $(".custom_btn_publish").click(function(){            
+            let publish_service_id=$(this).attr('data-service-id');
+            $.ajax({
+                type: "POST",
+                url: custom_video_call_ajaxURL,
+                dataType: 'json',
+                data: 
+                {
+                    action:'publish_unpublish_service',
+                    service_id: publish_service_id,                 
+                    
+                },
+                success: function(response) {   
+                    if(response.success=='true')
+                    {
+                        toastr.success(response.message);
+                        window.location.reload();
+                    }
+                    else
+                    {
+                        toastr.error(response.message);
+                    }
+                },
+            });
+            
+        });
+           
+        
+        $("#disconnect-stripe-account").click(function(){
+
+            Swal.fire({
+                icon: 'warning',                           
+                title:'Are you sure want to disconnect Stripe Account ?',              
+                confirmButtonText:'<h3 style="padding:0px;margin:0;">Remove</h3>',    
+                showCancelButton: true,         
+                cancelButtonText:'<h3 style="padding:0px;margin:0;">Cancel</h3>',   
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',              
+              }).then((result) => {
+                if (result.isConfirmed) 
+                {                
+                    $.ajax({
+
+                        type: "POST",
+                        url: custom_video_call_ajaxURL,
+                        dataType: 'json',
+                        data: {
+                            action:'disconnect_stripe_account',
+                        },                       
+                        success: function(response) {   
+                            toastr.success(response.message);       
+                            window.location.reload();                                                            
+                        },   
+                        error: function(error) {                    
+                           toastr.error('something went wrong, please refresh');
+                        }             
+                    });
+                }
+           });
+                
+        });
+
+                //cancel and refund booking
+                $(".cancel-btn-class").click(function(){
+                    let cancel_booking_id=$(this).attr('data-cancel-id');
+                    Swal.fire({
+                        icon: 'warning',                           
+                        title:'Are you sure want to cancel and get refund ?', 
+                        input:'text',                        
+                        inputAttributes: {
+                          autocapitalize: "off"
+                        },
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText:'<h3 style="padding:0px;margin:0;">Confirm</h3>',    
+                        showCancelButton: true,         
+                        cancelButtonText:'<h3 style="padding:0px;margin:0;">Close</h3>',                 
+                      }).then((result) => {
+                        if (result.isConfirmed) 
+                        {                
+                            const reason_to_cancel = Swal.getInput().value;                      
+                            $.ajax({
+
+                                type: "POST",
+                                url: custom_video_call_ajaxURL,
+                                dataType: 'json',
+                                data: {
+                                    booking_id:cancel_booking_id,
+                                    cancel_reason:reason_to_cancel,
+                                    action:'cancel_booking_and_refund',
+                                },                       
+                                success: function(response) {   
+                                    if(response.success=='true')
+                                    {
+                                        toastr.success(response.message);       
+                                        window.location.reload();     
+                                    }                                                                                         
+                                },   
+                                error: function(error) {                    
+                                   toastr.error('something went wrong, please refresh');
+                                }             
+                            });
+                        }
+        
+                })
+            });
+
+            $(".complete-booking-btn").click(function(){
+                let complete_booking_id=$(this).attr('data-complete-id');
+                Swal.fire({
+                    icon: 'warning',                           
+                    title:'Are you sure want to complete booking ?',                                                          
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText:'<h3 style="padding:0px;margin:0;">Confirm</h3>',    
+                    showCancelButton: true,         
+                    cancelButtonText:'<h3 style="padding:0px;margin:0;">Close</h3>',                 
+                  }).then((result) => {
+                    if (result.isConfirmed) 
+                    {                                        
+                        $.ajax({
+
+                            type: "POST",
+                            url: custom_video_call_ajaxURL,
+                            dataType: 'json',
+                            data: {
+                                booking_id:complete_booking_id,                                
+                                action:'stripe_transfer_complete_payment',
+                            },                       
+                            success: function(response) {   
+                                if(response.success=='true')
+                                {
+                                    toastr.success(response.message);       
+                                    window.location.reload();     
+                                }                                                                                         
+                            },   
+                            error: function(error) {                    
+                               toastr.error('something went wrong, please refresh');
+                            }             
+                        });
+                    }
+    
+            })
+            });
 
     })
 })(jQuery);

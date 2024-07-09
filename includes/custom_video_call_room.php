@@ -1,30 +1,71 @@
 <?php
+use ZEGO\ZegoServerAssistant;
+use ZEGO\ZegoErrorCodes;
+
+
+add_action('wp_ajax_generate_secure_token_zego','generate_secure_token_for_zegocloud');
+
+function generate_secure_token_for_zegocloud()
+{
+    $user_id=strval(get_current_user_id());    
+    if(is_user_logged_in())
+    {
+        $zego_cloud_appid=(int)carbon_get_theme_option('zegocloud_appid');
+        $zego_cloud_secret=carbon_get_theme_option('zegocloud_serversecret');
+        $payload = '';
+        $token = ZegoServerAssistant::generateToken04($zego_cloud_appid,$user_id,$zego_cloud_secret,7200,$payload);
+        if( $token->code == ZegoErrorCodes::success ){           
+           $data['success']='true';
+           $data['token']=$token;
+          wp_send_json($data);
+        
+        }
+        else
+        {
+            $data['success']='false';
+            $data['token']='';
+            wp_send_json($data);
+        }    
+    }
+    else
+    {
+        $data['success']='false';
+        $data['token']='';
+        wp_send_json($data);
+    }
+    die();
+}
+
 
 add_action('wp_head','get_zegocloud_info',1);
 
 function get_zegocloud_info()
 {
-    $zego_cloud_appid=carbon_get_theme_option('zegocloud_appid');
-    $zego_cloud_secret=carbon_get_theme_option('zegocloud_serversecret');
+    $zego_cloud_appid=carbon_get_theme_option('zegocloud_appid');    
+    
+    $custom_ajax_action_url=site_url().'/wp-admin/admin-ajax.php?action=generate_secure_token_zego';    
     if(is_user_logged_in())
     {
-        $current_user_info=wp_get_current_user();
-        $zego_cloud_name_display= $current_user_info->user_login;
+        $current_user_info=wp_get_current_user();        
+        $zego_cloud_name_display=um_get_display_name($current_user_info->ID);  
+       
     }
     else
     {
-        $zego_cloud_name_display='username';
+        $zego_cloud_name_display='username';       
     }   
     ?>
     <script>
-        let zegocloud_appid=<?php echo $zego_cloud_appid; ?>;
-        let zegocloud_secret="<?php echo $zego_cloud_secret; ?>";
-        let zegocloud_display_name="<?php echo $zego_cloud_name_display; ?>";
+        let zegocloud_appid=<?php echo $zego_cloud_appid; ?>;       
+        let zegocloud_display_name="<?php echo $zego_cloud_name_display; ?>";       
+        let zegocloud_create_room_user_id="<?php echo get_current_user_id(); ?>"; 
+        let custom_ajax_action_url="<?php echo $custom_ajax_action_url; ?>";
     </script>
     <?php
 }
 
 //get video call room id 
+//prevent other user from accessing to other video call and init video id for frontend
 add_action('wp_head','get_video_call_room_id',1);
 
 function get_video_call_room_id()
@@ -77,6 +118,7 @@ function get_booking_item_by_video_call_room_id($room_id='randomstring')
        $booking_item_info['booking_date']=get_post_meta($search_booking_id,'booking_date',true);
        $booking_item_info['booking_trainee_id']=get_post_meta($search_booking_id,'trainee_id',true);
        $booking_item_info['booking_coach_id']=get_post_meta($search_booking_id,'coach_id',true);
+       $booking_item_info['booking_status']=get_post_meta($search_booking_id,'booking_status',true);
     }
     else
     {
@@ -86,3 +128,4 @@ function get_booking_item_by_video_call_room_id($room_id='randomstring')
      
     return $booking_item_info;
 }
+
