@@ -34,3 +34,5 @@ function init_zego_cloud_token_lib() {
 
 
 require('custom_video_call_room.php');
+
+require('custom_sending_email_feature.php');

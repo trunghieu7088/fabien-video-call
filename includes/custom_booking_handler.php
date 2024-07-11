@@ -2,7 +2,7 @@
 
 function convert_booking_item($booking_item)
 { 
-
+    $custom_texts = TextManager::getInstance();
     $converted_booking['ID']=$booking_item->ID;
     $converted_booking['description']=$booking_item->post_content;
     $converted_booking['short_description']=wp_trim_words($booking_item->post_content,35,'...');
@@ -40,11 +40,13 @@ function convert_booking_item($booking_item)
     if($booking_status=='completed' || $booking_status=='cancelled')
     {    
         $converted_booking['booking_status']=$booking_status;
+        $converted_booking['booking_status_label']=$custom_texts->getText($converted_booking['booking_status'].'_booking_text');
     }
     else
     {
         $converted_booking['booking_status']=get_booking_status($booking_date,$booking_time);
         update_post_meta($booking_item->ID,'booking_status',$converted_booking['booking_status']);
+        $converted_booking['booking_status_label']=$custom_texts->getText($converted_booking['booking_status'].'_booking_text');
     }
     
 
@@ -60,9 +62,8 @@ function convert_booking_item($booking_item)
     $converted_booking['booking_type']= get_post_meta($booking_item->ID,'booking_type',true);
     $converted_booking['booking_location']=get_post_meta($booking_item->ID,'booking_location',true);
 
-    $custom_texts = TextManager::getInstance();
-
-    $converted_booking['new_title']= $custom_texts->getText('upcoming_booking_text');
+    
+    
 
     return $converted_booking;
 }
@@ -213,24 +214,44 @@ function set_color_base_on_status($status)
 
 function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_id,$booking_id='')
 {
+    $textManager = TextManager::getInstance();
     $button_html_content='';
     $cancel_reason='';
-    $cancel_button='<a class="action-link cancel-btn-class" data-cancel-id="'.$booking_id.'" href="javascript:void(0)"><i class="fa fa-circle-xmark"></i>Cancel</a>';
+    $cancel_button='<a class="action-link cancel-btn-class" data-cancel-id="'.$booking_id.'" href="javascript:void(0)"><i class="fa fa-circle-xmark"></i>'.$textManager->getText('cancel_button_label').'</a>';
     
     if($status=='cancelled')
     {
-        $cancel_reason=get_post_meta($booking_id,'cancel_reason',true);
+        $cancel_owner_id=get_post_meta($booking_id,'cancel_owner_id',true);
+        if($cancel_owner_id)
+        {            
+            $cancel_reason=$textManager->getText('cancelled_by_text').' '.um_get_display_name($cancel_owner_id);
+        }                
+        else
+        {
+            $cancel_reason=$textManager->getText('cancelled_by_text');
+        }
+        $cancel_reason.='<br>';
+        $cancel_reason.=$textManager->getText('reason_text').' '.get_post_meta($booking_id,'cancel_reason',true);        
     }
-    $done_button='<a href="javascript:void(0)" data-complete-id="'.$booking_id.'" class="action-link complete-booking-btn"><i class="fa fa-check-circle"></i>'.'Done'.'</a>';
+
+    //only display done button for the trainee
+    if(get_current_user_id()==get_post_meta($booking_id,'trainee_id',true))
+    {
+        $done_button='<a href="javascript:void(0)" data-complete-id="'.$booking_id.'" class="action-link complete-booking-btn"><i class="fa fa-check-circle"></i>'.$textManager->getText('done_btn_label').'</a>';
+    }
+    else
+    {
+        $done_button='';
+    }
    
     $join_button='<a class="action-link" href="'.site_url('video-call').'/?videoroomid='.$booking_room_id.'">';
-    $join_button.='<i class="fa fa-right-to-bracket"></i>'.'Join'.'</a>';
+    $join_button.='<i class="fa fa-right-to-bracket"></i>'.$textManager->getText('join_button_label').'</a>';
     
     if($meet_type=='face-to-face')
     {
         switch ($status) {
             case 'upcoming':
-                $button_html_content.=$cancel_button;
+                $button_html_content=$cancel_button;
             break;
 
             case 'cancelled':
@@ -238,12 +259,12 @@ function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_i
             break;
 
             case 'inprogress':
-                $button_html_content.=$done_button;
+                $button_html_content=$done_button;
                 $button_html_content.=$cancel_button;
             break;
             
             case 'overdue':
-                $button_html_content.=$done_button;
+                $button_html_content=$done_button;
                 $button_html_content.=$cancel_button;
             break;
 
@@ -261,7 +282,7 @@ function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_i
     {
         switch ($status) {
             case 'upcoming':     
-                $button_html_content.=$cancel_button;
+                $button_html_content=$cancel_button;
             break;
 
             case 'cancelled':
@@ -305,7 +326,16 @@ function handling_display_join_cancel_buttons($status,$meet_type,$booking_room_i
 
 function init_booking_status()
 {
-    $status_collection=array('all'=>'All','upcoming'=>'Upcoming','cancelled'=>'Cancelled','inprogress'=>'In Progress','overdue'=>'Overdue','completed'=>'Completed');
+    $textManager = TextManager::getInstance();
+
+    $status_collection=array(
+    'all'=>'All',
+    'upcoming'=>$textManager->getText('upcoming_booking_text'),
+    'cancelled'=>$textManager->getText('cancelled_booking_text'),
+    'inprogress'=>$textManager->getText('inprogress_booking_text'),
+    'overdue'=>$textManager->getText('overdue_booking_text'),
+    'completed'=>$textManager->getText('completed_booking_text'),
+    );
 
     return $status_collection;
 }

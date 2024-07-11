@@ -1,39 +1,5 @@
 <?php
-// ADD DEFINE ROLE PAGE TEMPLATE
-add_filter( 'template_include', 'register_define_role_page_template', 99 );
 
-function register_define_role_page_template($template)
-{
-     global $post;
-     if(isset($post) && !empty($post))
-     {
-        $custom_template_slug   = 'custom-video-call-define-role.php';
-        $page_template_slug     = get_page_template_slug( $post->ID );
-
-        if( $page_template_slug == $custom_template_slug ){
-        return CUSTOM_VIDEO_CALL_PATH .'/'.$custom_template_slug;
-        }
-    }
-    return $template;
-}
-
-// ADD MY CUSTOM PROFILE PAGE TEMPLATE
-add_filter( 'template_include', 'register_custom_profile_page', 99 );
-
-function register_custom_profile_page($template)
-{
-     global $post;
-     if(isset($post) && !empty($post))
-     {
-        $custom_template_slug   = 'custom-video-call-profile-page.php';
-        $page_template_slug     = get_page_template_slug( $post->ID );
-
-        if( $page_template_slug == $custom_template_slug ){
-        return CUSTOM_VIDEO_CALL_PATH .'/'.$custom_template_slug;
-        }
-    }
-    return $template;
-}
 
 // ADD post service page TEMPLATE
 add_filter( 'template_include', 'register_post_service_page', 99 );
@@ -104,45 +70,6 @@ function register_booking_management_page_template($template)
 }
 
 
-//add page template stripe callback
-
-add_filter( 'template_include', 'register_stripe_connect_callback_page_template', 99 );
-
-function register_stripe_connect_callback_page_template($template)
-{
-    global $post;
-    if(isset($post) && !empty($post))
-    {
-       $custom_template_slug   = 'custom-video-call-stripe-connect-callback.php';
-       $page_template_slug     = get_page_template_slug( $post->ID );
-
-       if( $page_template_slug == $custom_template_slug ){
-       return CUSTOM_VIDEO_CALL_PATH .'/'.$custom_template_slug;
-       }
-   }
-   return $template;
-}
-
-//add page template stripe handling
-
-add_filter( 'template_include', 'register_stripe_connect_handling_page_template', 99 );
-
-function register_stripe_connect_handling_page_template($template)
-{
-    global $post;
-    if(isset($post) && !empty($post))
-    {
-       $custom_template_slug   = 'custom-video-call-handling-return-stripe-callback.php';
-       $page_template_slug     = get_page_template_slug( $post->ID );
-
-       if( $page_template_slug == $custom_template_slug ){
-       return CUSTOM_VIDEO_CALL_PATH .'/'.$custom_template_slug;
-       }
-   }
-   return $template;
-}
-
-
 //add page template video call room
 
 add_filter( 'template_include', 'register_custom_video_call_room', 99 );
@@ -167,9 +94,7 @@ add_action('wp_loaded','addRequiredPage');
 
 function addRequiredPage()
 {
-    //create define role page
-    custom_check_and_create_page('custom-video-call-define-role.php','definerole');    
-
+  
     //create post service page
     custom_check_and_create_page('custom-video-call-post-service-page.php','custom-post-service');
 
@@ -177,13 +102,7 @@ function addRequiredPage()
     custom_check_and_create_page('custom-video-call-service-list-page.php','custom-service-list');
 
     //create booking manage page
-    custom_check_and_create_page('custom-video-call-booking-manage.php','custom-manage-booking');
-
-    //create stripe connect callback
-    custom_check_and_create_page('custom-video-call-stripe-connect-callback.php','custom-stripe-callback');
-
-    //create stripe handling callback
-    custom_check_and_create_page('custom-video-call-handling-return-stripe-callback.php','custom-stripe-handling');
+    custom_check_and_create_page('custom-video-call-booking-manage.php','custom-manage-booking');    
 
     //create video call room
     custom_check_and_create_page('custom-video-call-room.php','video-call');

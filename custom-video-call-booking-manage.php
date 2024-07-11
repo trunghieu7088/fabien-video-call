@@ -4,12 +4,13 @@ Template Name: Custom Video Call Booking Management Page
 */
 ?>
 <?php
+//redirect non-logged user to homepage
 if(!is_user_logged_in())
 {
-    wp_redirect(site_url());
+    wp_redirect(site_url('/identification/'));
 }
 get_header();
-
+$textManager = TextManager::getInstance();
 ?>
 <?php 
 $custom_user_info=wp_get_current_user();
@@ -22,24 +23,33 @@ $filter_type = isset($_GET['type']) ? $_GET['type'] : '';
 
 $filter_condition=array('order'=>$filter_order,'status'=>$filter_status,'type'=>$filter_type);
 
-if ( in_array( 'coach', $custom_user_info->roles, true )) 
+$is_defined_role=determine_role_by_id($custom_user_info->ID,'coach',true);
+
+if($is_defined_role==true)
 {
-    $owner_type='coach';    
+    if ( in_array( 'coach', $custom_user_info->roles, true )) 
+    {
+        $owner_type='coach';    
+    }
+    else
+    {
+        $owner_type='trainee';
+    }
+    $current_page = get_query_var('paged') ? get_query_var('paged') : 1;    
+    $booking_list=get_all_bookings($current_page,get_current_user_id(),$owner_type,$filter_condition);
+    $status_collection=init_booking_status();
 }
-else
-{
-    $owner_type='trainee';
-}
-$current_page = get_query_var('paged') ? get_query_var('paged') : 1;    
-$booking_list=get_all_bookings($current_page,get_current_user_id(),$owner_type,$filter_condition);
-$status_collection=init_booking_status();
+
+
 ?>
+
 <div class="container all-booking-wrapper">
-    <p class="all-booking-title">My Booking</p>
+<?php if($is_defined_role==true): ?>
+    <p class="all-booking-title"><?php echo $textManager->getText('my_booking_label'); ?></p>
     <div class="booking-filters-area">
         <input type="hidden" name="booking-filter-base-link" id="booking-filter-base-link" value="<?php echo site_url('custom-manage-booking'); ?>">        
         <div class="booking-filter-container">
-            <span class="booking-filter-title">Status</span>
+            <span class="booking-filter-title"><?php echo $textManager->getText('status_filter_booking_label'); ?></span>
             <select class="booking-option-filter" id="booking_status_filter" name="booking_status_filter">                                
                 
                 <?php foreach($status_collection as $status_key => $status_value): ?>
@@ -50,26 +60,26 @@ $status_collection=init_booking_status();
         </div>    
 
         <div class="booking-filter-container">
-            <span class="booking-filter-title">Date</span>
+            <span class="booking-filter-title"><?php echo $textManager->getText('date_filter_booking_label'); ?></span>
             <select class="booking-option-filter" id="booking_sort_filter" name="booking_sort_filter">           
-                <option <?php if($filter_order=='asc') echo 'selected'; ?> value="asc">Oldest</option>
-                <option <?php if($filter_order=='desc') echo 'selected'; ?> value="desc">Latest</option>            
+                <option <?php if($filter_order=='asc') echo 'selected'; ?> value="asc"><?php echo $textManager->getText('date_filter_oldest_label'); ?></option>
+                <option <?php if($filter_order=='desc') echo 'selected'; ?> value="desc"><?php echo $textManager->getText('date_filter_latest_label'); ?></option>            
             </select>
         </div>
 
         <div class="booking-filter-container">
-            <span class="booking-filter-title">Meet type</span>
+            <span class="booking-filter-title"><?php echo $textManager->getText('meettype_filter_booking_label'); ?></span>
             <select id="booking_sort_meettype" name="booking_sort_meettype" class="booking-option-filter">
-                        <option value="all">All</option>
-                        <option <?php if($filter_type=='face-to-face') echo 'selected'; ?> value="face-to-face">face-to-face</option>           
-                        <option <?php if($filter_type=='online-meeting') echo 'selected'; ?> value="online-meeting">Online</option>           
+                        <option value="all"><?php echo $textManager->getText('meettype_filter_all_label'); ?></option>
+                        <option <?php if($filter_type=='face-to-face') echo 'selected'; ?> value="face-to-face"><?php echo $textManager->getText('meettype_filter_face_label'); ?></option>           
+                        <option <?php if($filter_type=='online-meeting') echo 'selected'; ?> value="online-meeting"><?php echo $textManager->getText('meettype_filter_online_label'); ?></option>           
                 </select> 
         </div>                
 
         <div class="booking-filter-container">
         <span class="booking-filter-title" style="visibility:hidden;">show</span>
             <button class="booking_filter_search" id="booking_filter_search" name="booking_filter_search">
-                <i class="fa fa-filter"></i> Filter
+                <i class="fa fa-filter"></i> <?php echo $textManager->getText('filter_btn_booking_label'); ?>
             </button>
         </div>
     </div>
@@ -101,7 +111,7 @@ $status_collection=init_booking_status();
                     
                     <div class="item-column <?php echo $collection_color['color']; ?>">
                         <i class="fa fa-dot-circle"></i> 
-                        <?php echo $booking_item['booking_status']; ?>
+                        <?php echo $booking_item['booking_status_label']; ?>
                     </div>                    
 
                     <div class="item-column">
@@ -131,11 +141,11 @@ $status_collection=init_booking_status();
                         <?php
                         if(get_current_user_id()==(int)$booking_item['trainee_id'])
                         {
-                            $display_name='<span style="margin-right:5px;">Coach:</span> '.'<strong>'.$booking_item['coach_name'].'</strong>';
+                            $display_name='<span style="margin-right:5px;">'.$textManager->getText('role_coach_label').':</span> '.'<strong>'.$booking_item['coach_name'].'</strong>';
                         }
                         if(get_current_user_id()==(int)$booking_item['coach_id'])
                         {
-                            $display_name='<span style="margin-right:5px;">Trainee:</span> '.'<strong>'.$booking_item['trainee_name'].'</strong>';
+                            $display_name='<span style="margin-right:5px;">'.$textManager->getText('role_trainee_label').':</span> '.'<strong>'.$booking_item['trainee_name'].'</strong>';
                         }
                         echo $display_name;
                         ?>
@@ -149,10 +159,10 @@ $status_collection=init_booking_status();
                        <a target="_blank" href="<?php echo $booking_item['service_url']; ?>"> <?php echo $booking_item['title']; ?></a>
                     </div>        
                     <div class="item-column service-description">                        
-                        <p  style="margin:0;"><strong>Notification Message: </strong><?php echo $booking_item['booking_note']; ?></p>
-                        <p><i class="fa fa-message"></i> <strong>Type:</strong> <?php echo $booking_item['booking_type']; ?></p>
+                        <p  style="margin:0;"><strong><?php echo $textManager->getText('notification_message_booking_label') ?></strong> <?php echo $booking_item['booking_note']; ?></p>
+                        <p><i class="fa fa-message"></i> <strong><?php echo $textManager->getText('meet_type_booking_label') ?></strong> <?php echo $booking_item['booking_type']; ?></p>
                         <?php if($booking_item['booking_type']=='face-to-face'): ?>
-                            <p><i class="fa fa-map-marker"></i> <strong>Location:</strong> <?php echo $booking_item['booking_location']; ?></p>
+                            <p><i class="fa fa-map-marker"></i> <strong><?php echo $textManager->getText('location_booking_label')?></strong> <?php echo $booking_item['booking_location']; ?></p>
                         <?php endif; ?>
                     </div>   
 
@@ -204,6 +214,10 @@ $status_collection=init_booking_status();
 
     <?php endif; ?>
     </div>
+<?php else: ?>
+    <h3 style="text-align:center;"><?php echo $textManager->getText('require_define_role_message'); ?></h3>
+    <p style="text-align:center;"><a href="<?php echo site_url('/profil/#custom-define-role-block'); ?>"><?php echo $textManager->getText('update_role_message'); ?></a></p>    
+<?php endif; ?>    
 </div>
 <?php
 get_footer();

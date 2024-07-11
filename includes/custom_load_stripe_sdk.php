@@ -23,6 +23,7 @@ function getStripeInfo()
                         'stripe_public_key'=>carbon_get_theme_option('custom_video_call_stripe_pk'),
                         'stripe_secret_key'=>carbon_get_theme_option('custom_video_call_stripe_sk'),                        
                         'stripe_redirect_url'=>'https://connect.stripe.com/oauth/authorize?response_type=code',
+                        //'redirect_uri_callback'=>site_url().'/profil/',                                                
                         'redirect_uri_callback'=>site_url().'/myprofile/',                                                
     );
     return $stripe_info;
@@ -49,7 +50,8 @@ function connect_stripe_callback_init()
                 update_user_meta($user_id, 'stripe_account_id', $body['stripe_user_id']);
                 update_user_meta($user_id, 'stripe_connect_status', 'true');
             }
-            wp_redirect(site_url('/myprofile/'));
+            //wp_redirect(site_url('/profil/'));
+            wp_redirect(site_url('/myprofile/'));            
             exit();
         }    
 }
@@ -98,9 +100,13 @@ function cancel_booking_and_refund_action()
         $data['message']='Cancel booking successfully !';
         $data['success']='true';     
 
+        
         update_post_meta($booking_item_info->ID,'booking_status','cancelled');
         update_post_meta($booking_item_info->ID,'cancel_reason',$cancel_reason);
+        update_post_meta($booking_item_info->ID,'cancel_owner_id',get_current_user_id());
 
+        //create custom hook
+        do_action('custom_hook_action_cancel',$booking_item_info->ID);
     }
     else
     {
@@ -132,20 +138,36 @@ function stripe_transfer_complete_payment_init()
         //get payment intent from DB
         $payment_intentID=get_post_meta($booking_item_info->ID,'payment_intent_id',true);
 
+        $coach_id=get_post_meta($booking_item_info->ID,'coach_id',true);
+        
+        $stripe_account_id=get_user_meta($coach_id,'stripe_account_id',true);
+
         //get real info of payment intent from Stripe
         $paymentIntent_stripe = $stripe->paymentIntents->retrieve($payment_intentID);
 
+        $amount = $paymentIntent_stripe->amount; // Amount in cents
+        $currency = $paymentIntent_stripe->currency; // Currency     
+
+        $commissionRate=(int)carbon_get_theme_option('custom_video_call_commission') / 100;
+
+        $transfer_amount= $amount - ( $amount * $commissionRate );
+    
         $result=$stripe->transfers->create([
-            'amount' => 1000, //in cents
-            'currency' => 'usd',
-            'destination' => 'acct_1PNopkC0cCEAIlSG',
+            'amount' => $transfer_amount, //in cents
+            'currency' =>  $currency,
+            'destination' => $stripe_account_id,
         ]);
-        $data['result']=$result;
-        $data['message']='success';
+        
+        update_post_meta($booking_item_info->ID,'booking_status','completed');
+        $data['message']='Completed booking successfully';
+        $data['success']='true';
+
+        //create hook for future custom
+        do_action('custom_hook_action_complete',$booking_item_info->ID);
     }
     else
     {
-        $data['message']='failed to cancel booking';
+        $data['message']='failed to complete booking';
         $data['success']='false';        
     }
     wp_send_json($data);
@@ -209,6 +231,10 @@ function custom_video_service_complete_order_init()
     $data['success']='true';
     $data['message']='Booking successfully';   
     $data['redirect_url']=site_url('custom-manage-booking');
+
+    //create hook for future custom
+    do_action('custom_hook_action_booking',$booking_created);
+
     wp_send_json($data);
     die();
    
@@ -231,7 +257,7 @@ function custom_video_service_order_checkout_init()
     $custom_paymentIntent = $stripe->paymentIntents->create([
         'amount' => $service_price * 100, // convert usd to cents 
         'currency' =>$service_currency,
-        'payment_method_types' => ['card'],
+        'payment_method_types' => ['card'],        
     ]);
 
     
@@ -244,29 +270,6 @@ function custom_video_service_order_checkout_init()
     die();
 }
 
-//redirect the none-connected-stripe coach when they redirect to the pages.
-//add_action('wp_head','checkStripeConnect',2);
-function checkStripeConnect()
-{
-    $custom_user_info=wp_get_current_user();
-    $is_coach=false;
-    $stripe_connect_status=false;
-    if ( in_array( 'coach', $custom_user_info->roles, true )) 
-    {
-        $is_coach=true;    
-    }
-    if(get_user_meta($custom_user_info->ID,'stripe_connect_status',true)=='true')
-    {
-        $stripe_connect_status=true;
-    }
-    if($stripe_connect_status==false && $is_coach==true
-    && (is_page('custom-post-service') || is_page('custom-service-list') || is_page('custom-manage-booking')))
-    {                              
-        //redirect to Stripe connect page
-        wp_redirect('custom-stripe-callback');
-               
-    }     
-}
 
 add_shortcode('stripe_connect_callback_shortcode','stripe_connect_callback_shortcode_action');
 
@@ -281,6 +284,7 @@ add_shortcode('stripe_connect_area','stripe_connect_area_shortcode',99);
 function stripe_connect_area_shortcode()
 {
     ob_start();
+    $textManager = TextManager::getInstance();
     $custom_user_info=wp_get_current_user();
     $is_coach=determine_role_by_id(get_current_user_id(),'coach');
     $stripe_connect_status=false;
@@ -294,18 +298,31 @@ function stripe_connect_area_shortcode()
     <div id="stripe-connect-area">
         <?php if($stripe_connect_status==false && $is_coach==true): ?>
         <div class="row stripe-connect-container">        
-                <div class="stripe-connect-title">You are the coach and you need to connect Stripe Account before posting service or get payments</div>
-                <a href="<?php echo hanlding_stripe_connect_button(); ?>" class="stripe-connect-link">Connect Stripe</a>        
+                <div class="stripe-connect-title"><?php echo $textManager->getText('stripe_connect_require_message') ?></div>
+                <a href="<?php echo hanlding_stripe_connect_button(); ?>" class="stripe-connect-link"><?php echo $textManager->getText('stripe_connect_btn_label') ?></a>        
         </div>
         <?php endif; ?>
 
         <?php if($stripe_connect_status==true && $is_coach==true): ?>
         <div class="row stripe-connect-container">        
-                <div class="stripe-connect-title">You have connected to Stripe</div>
-                <a href="javascript:void(0)" id="disconnect-stripe-account" class="stripe-connect-link">Disconnect Stripe</a>        
+                <div class="stripe-connect-title"><?php echo $textManager->getText('stripe_connect_status_message') ?></div>
+                <a href="javascript:void(0)" id="disconnect-stripe-account" class="stripe-connect-link"><?php echo $textManager->getText('stripe_disconnect_btn_label') ?></a>        
         </div>
         <?php endif; ?>
     </div>
     <?php
     return ob_get_clean();
+}
+
+function check_stripe_account_connect($user_id)
+{
+    if(get_user_meta($user_id,'stripe_connect_status',true)=='true')
+    {
+       return true;
+    }
+    else
+    {
+        return false;
+    }
+
 }

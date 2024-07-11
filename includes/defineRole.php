@@ -27,40 +27,17 @@ function custom_video_call_save_role_action()
     }
     else
     {
-        $data['redirect_url']='custom-list-service';
+        $data['redirect_url']=site_url('/profil/');
     }
 
     wp_send_json($data);
     die();
 }
 
-//redirect the none-defined users to the define role if they access to custom video call plugin pages
-//add_action('wp_head','checkRoleCustomVideo',1);
 
-function checkRoleCustomVideo()
-{
-    $custom_user_info=wp_get_current_user();
-    $is_defined_role=false;
-    if ( in_array( 'trainee', $custom_user_info->roles, true ) ||  in_array( 'coach', $custom_user_info->roles, true )) 
-    {
-        $is_defined_role=true;    
-    }
-    if(is_page('custom-post-service') || is_page('custom-service-list') || is_page('custom-manage-booking'))
-    {                        
-        if($is_defined_role==false)
-        {
-            wp_redirect('definerole');
-        }           
-    }     
-    if($is_defined_role==true && is_page('definerole'))     
-    {
-        wp_redirect('custom-service-list');
-    }  
-}
-
-function determine_role_by_id($user_id,$input_role,$check_role=false)
+function determine_role_by_id($user_id,$input_role,$check_role_exist=false)
 {   
-    if($check_role==false)
+    if($check_role_exist==false)
     {
         if(is_user_logged_in())
         {
@@ -107,19 +84,19 @@ function define_role_block_init()
 {
     ob_start();    
     $is_defined_role=determine_role_by_id(get_current_user_id(),'coach',true);
-
+    $textManager = TextManager::getInstance();
     ?>
-    <div class="row define-role-block">
+    <div class="row define-role-block" id="custom-define-role-block">
     <?php if(is_user_logged_in() && $is_defined_role==false): ?>
    
         <div class="col-md-12 col-sm-12">
-            <p class="roleTitle">Please define your role</p>            
+            <p class="roleTitle"><?php echo $textManager->getText('define_role_message'); ?></p>            
             <form class="define-role-form-block" id="identify-role-form">
                     <input type="hidden" name="action" value="custom_video_call_save_role">
-                    <p><input type="radio" id="coach_selector" name="role_type" value="coach"> <span><strong>Coach </strong></span></p>
-                    <p><input type="radio" id="student_selector" name="role_type" value="trainee"><span> <strong> Trainee </strong></span></p>
+                    <p><input type="radio" id="coach_selector" name="role_type" value="coach"> <span><strong><?php echo $textManager->getText('role_coach_label'); ?> </strong></span></p>
+                    <p><input type="radio" id="student_selector" name="role_type" value="trainee"><span> <strong> <?php echo $textManager->getText('role_trainee_label'); ?> </strong></span></p>
                     <div class="submit-button-container">
-                        <button type="submit" class="custom-save-role-btn">Save</button>
+                        <button type="submit" class="custom-save-role-btn"><?php echo $textManager->getText('save_role_button'); ?></button>
                     </div>
                     
             </form>
@@ -129,10 +106,10 @@ function define_role_block_init()
     <?php if(is_user_logged_in() && $is_defined_role==true ): ?>
         <?php 
             $current_role=determine_role_by_id(get_current_user_id(),'coach'); 
-            if($current_role==true) $current_role='Coach'; else $current_role='Trainee';
+            if($current_role==true) $current_role= $textManager->getText('role_coach_label'); else $current_role= $textManager->getText('role_trainee_label');;
         ?>
         <div class="roleTitle">
-            Your role has been defined as <?php echo $current_role; ?>
+        <?php echo $textManager->getText('defined_role_message'); ?> <?php echo $current_role; ?>
         </div>
     <?php endif; ?>
     </div>

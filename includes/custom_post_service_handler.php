@@ -30,6 +30,7 @@ function create_video_call_service_action()
                 );
 
     $video_call_service_created=wp_insert_post($video_call_args);
+    $textManager = TextManager::getInstance();
     if($video_call_service_created && !is_wp_error($video_call_service_created))
     {
         update_post_meta($video_call_service_created,'video_service_price',$service_price);
@@ -55,13 +56,13 @@ function create_video_call_service_action()
         }
 
         $data['success']='true';
-        $data['message']='Submit service successfully';   
+        $data['message']=$textManager->getText('service_submit_success_message');   
         $data['redirect_url']=site_url('custom-service-list');
     }
     else
     {
         $data['success']='false';
-        $data['message']='failed to create service';   
+        $data['message']=$textManager->getText('service_submit_fail_message');  
         $data['redirect_url']=site_url('custom-post-service');
     }
    

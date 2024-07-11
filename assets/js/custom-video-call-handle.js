@@ -491,7 +491,10 @@
                                     booking_id:cancel_booking_id,
                                     cancel_reason:reason_to_cancel,
                                     action:'cancel_booking_and_refund',
-                                },                       
+                                },      
+                                beforeSend: function(){
+                                    toastr.warning('Attemping to complete','',{timeOut: 5000});
+                                },                     
                                 success: function(response) {   
                                     if(response.success=='true')
                                     {
@@ -529,7 +532,10 @@
                             data: {
                                 booking_id:complete_booking_id,                                
                                 action:'stripe_transfer_complete_payment',
-                            },                       
+                            },   
+                            beforeSend: function(){
+                                toastr.warning('Attemping to complete','',{timeOut: 5000});
+                            },                 
                             success: function(response) {   
                                 if(response.success=='true')
                                 {

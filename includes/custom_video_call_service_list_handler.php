@@ -89,6 +89,7 @@ function get_all_video_services($page_number,$search_string='',$service_category
 function convert_service_for_display($service)
 {   
 
+    $textManager = TextManager::getInstance();
     $service_owner=get_user_by('ID',$service->post_author);
     $converted_service['ID']=$service->ID;    
     
@@ -138,7 +139,7 @@ function convert_service_for_display($service)
     $converted_service['human_readable_time']=timeAgo($service->post_date);
 
     //display name--> maybe change to match with plugin UM
-    $converted_service['service_owner_name']='Posted by '.um_user( 'display_name' );
+    $converted_service['service_owner_name']=$textManager->getText('posted_by_label').' '.um_user( 'display_name' );
     $avatar=um_get_user_avatar_url( $service_owner->ID, '80' );
     $converted_service['avatar']=$avatar;   
     //$converted_service['service_owner_url']= um_user_profile_url( $service_owner->ID);
@@ -155,12 +156,12 @@ function convert_service_for_display($service)
 
     if($meeting_type=='face-to-face')
     {
-        $converted_service['meeting_type']='face-to-face';
+        $converted_service['meeting_type']=$textManager->getText('face_to_face_list_label');
         $converted_service['meettype_location']=get_post_meta($service->ID,'meettype_location',true);
     }
     if($meeting_type=='online-meeting')
     {
-        $converted_service['meeting_type']='Online meeting';
+        $converted_service['meeting_type']=$textManager->getText('online_meeting_list_label');
         $converted_service['meettype_location']='';
     }
 
@@ -171,24 +172,25 @@ function convert_service_for_display($service)
 //handling human readable time
 
 function timeAgo($datetime) {
+
     $now = new DateTime(current_time('mysql'));
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
 
     if ($diff->y > 0) {
-        return $diff->y . ' year' . ($diff->y > 1 ? 's' : '') . ' ago';
+        return $diff->y . ' Année' . ($diff->y > 1 ? 's' : '') . '  il y a';
     } elseif ($diff->m > 0) {
-        return $diff->m . ' month' . ($diff->m > 1 ? 's' : '') . ' ago';
+        return $diff->m . ' Mois' . ($diff->m > 1 ? 's' : '') . '  il y a';
     } elseif ($diff->d > 0) {
-        return $diff->d . ' day' . ($diff->d > 1 ? 's' : '') . ' ago';
+        return $diff->d . ' Jour' . ($diff->d > 1 ? 's' : '') . '  il y a';
     } elseif ($diff->h > 0) {
-        return $diff->h . ' hour' . ($diff->h > 1 ? 's' : '') . ' ago';
+        return $diff->h . ' Heure' . ($diff->h > 1 ? 's' : '') . ' Il y a';
     } elseif ($diff->i > 0) {
-        return $diff->i . ' minute' . ($diff->i > 1 ? 's' : '') . ' ago';
+        return $diff->i . ' minute' . ($diff->i > 1 ? 's' : '') . '  il y a';
     } elseif ($diff->s > 0) {
-        return $diff->s . ' second' . ($diff->s > 1 ? 's' : '') . ' ago';
+        return $diff->s . ' seconde' . ($diff->s > 1 ? 's' : '') . '  il y a';
     } else {
-        return 'just now';
+        return 'À l instant';
     }
 }
 

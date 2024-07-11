@@ -20,6 +20,7 @@ function custom_video_call_settings()
     ->add_tab('Currency Settings', array(
         Field::make('text', 'custom_video_call_stripe_currency_code', __('Currency Code'))->set_default_value('usd'),
         Field::make('text', 'custom_video_call_stripe_currency_sign', __('Currency Sign'))->set_default_value('$'),      
+        Field::make('text', 'custom_video_call_commission', __('Commission Rate (%)'))->set_default_value(10),      
     ))
     ->add_tab('General Settings', array(
         Field::make('text', 'custom_number_of_service_each_page', __('Number of service each pages'))->set_default_value(20),      
@@ -38,6 +39,7 @@ function custom_video_call_settings()
 
         Field::make('text', 'service_title_label', __('Service Title'))->set_default_value('Service Title'),
         Field::make('text', 'please_enter_the_price_label', __('Please enter the price'))->set_default_value('Please enter the price'),
+        Field::make('text', 'service_price_label', __('Service Price'))->set_default_value('Service Price'),
         
         Field::make('text', 'service_duration_label', __('Duration (minutes)'))->set_default_value('Duration (minutes)'),
         Field::make('text', 'enter_duration_label', __('Please enter the minutes'))->set_default_value('Please enter the minutes'),
@@ -46,6 +48,9 @@ function custom_video_call_settings()
         Field::make('text', 'online_meeting_label', __('Online Meeting'))->set_default_value('Online Meeting'),
         Field::make('text', 'face_to_face_label', __('face-to-face'))->set_default_value('face-to-face'),
 
+        Field::make('text', 'post_service_location_label', __('Location'))->set_default_value('Location'),
+        Field::make('text', 'please_enter_location_label', __('Please enter detailed location'))->set_default_value('Please enter detailed location'),
+
         Field::make('text', 'service_category_label', __('Service Category'))->set_default_value('Service Category'),
         Field::make('text', 'select_category_label', __('Select a category'))->set_default_value('Select a category'),
 
@@ -53,6 +58,9 @@ function custom_video_call_settings()
         Field::make('text', 'service_image_label', __('Service Image'))->set_default_value('Service Image'),
 
         Field::make('text', 'service_submit_label', __('Submit'))->set_default_value('Submit'),
+
+        Field::make('text', 'service_submit_success_message', __('Submit service successfully'))->set_default_value('Submit service successfully'),
+        Field::make('text', 'service_submit_fail_message', __('Failed to submit service'))->set_default_value('Failed to submit service'),
 
     ))
     ->add_tab('Translating Service', array(
@@ -72,11 +80,17 @@ function custom_video_call_settings()
         Field::make('text', 'duration_list_label', __('Duration'))->set_default_value('Duration'),
 
         Field::make('text', 'posted_by_label', __('Posted by'))->set_default_value('Posted by'),
+        Field::make('text', 'only_my_service', __('Only my service'))->set_default_value('Only my service'),
+
+        Field::make('text', 'publish_service_btn', __('Publish Service'))->set_default_value('Publish Service'),
+        Field::make('text', 'unpublish_service_btn', __('Unpublish Service'))->set_default_value('Unpublish Service'),
 
         //detail service page
         Field::make('text', 'book_an_appointment', __('Book an appointment'))->set_default_value('Book an appointment'),
         Field::make('text', 'use_calendar_text', __('Use Calendar to pick date (yyyy-mm-dd)'))->set_default_value('Use Calendar to pick date (yyyy-mm-dd)'),
         Field::make('text', 'notice_text_placeholder', __('Contact methods or the notification message'))->set_default_value('Contact methods or the notification message'),
+        Field::make('text', 'order_service_btn_label', __('Order Service'))->set_default_value('Order Service'),
+        Field::make('text', 'billing_name_placeholder', __('Billing name'))->set_default_value('Billing name'),
     ))   
     ->add_tab('Translating Booking', array(
         Field::make('text', 'upcoming_booking_text', __('Upcoming'))->set_default_value('Upcoming'),
@@ -100,6 +114,49 @@ function custom_video_call_settings()
         Field::make('text', 'location_booking_label', __('Location'))->set_default_value('Location'),
 
         Field::make('text', 'notification_message_booking_label', __('Notification Message'))->set_default_value('Notification Message'),        
+
+        Field::make('text', 'status_filter_booking_label', __('Status'))->set_default_value('Status'), 
+
+        //date filter
+        Field::make('text', 'date_filter_booking_label', __('Date'))->set_default_value('Date'),             
+        Field::make('text', 'date_filter_latest_label', __('Latest'))->set_default_value('Latest'),     
+        Field::make('text', 'date_filter_oldest_label', __('Oldest'))->set_default_value('Oldest'),     
+
+
+        Field::make('text', 'meettype_filter_booking_label', __('Meet type'))->set_default_value('Meet type'),        
+        Field::make('text', 'meettype_filter_all_label', __('All'))->set_default_value('All'),     
+        Field::make('text', 'meettype_filter_face_label', __('Face-to-face'))->set_default_value('Face-to-face'),     
+        Field::make('text', 'meettype_filter_online_label', __('Onine meeting'))->set_default_value('Onine meeting'),     
+
+        Field::make('text', 'filter_btn_booking_label', __('Filter'))->set_default_value('Filter'),        
+
+        //booking action
+        Field::make('text', 'cancelled_by_text', __('Cancelled by'))->set_default_value('Cancelled by'),        
+        Field::make('text', 'reason_text', __('Reason'))->set_default_value('Reason'),        
+        Field::make('text', 'done_btn_label', __('Done'))->set_default_value('Done'),        
+
+    ))
+    ->add_tab('Translate User Profile', array(
+        
+        Field::make('text', 'role_coach_label', __('Coach'))->set_default_value('Coach'),
+        Field::make('text', 'role_trainee_label', __('Trainee'))->set_default_value('Trainee'),
+
+        Field::make('text', 'define_role_message', __('Please define your role'))->set_default_value('Please define your role'),        
+        Field::make('text', 'save_role_button', __('Save'))->set_default_value('Save'),        
+        
+        Field::make('text', 'defined_role_message', __('Your role has been defined as'))->set_default_value('Your role has been defined as'),        
+        
+        Field::make('text', 'require_define_role_message', __('Only the coach or the trainee can access this page'))->set_default_value('Only the coach or the trainee can access this page'),        
+        Field::make('text', 'update_role_message', __('Please update role here here.'))->set_default_value('Please update role here here.'),        
+
+        Field::make('text', 'only_coach_post_service_message', __('Only coach who has connected Stripe account can post service.'))->set_default_value('Only coach who has connected Stripe account can post service.'),                
+
+        Field::make('text', 'stripe_connect_require_message', __('You are the coach and you need to connect Stripe Account before posting service or get payments'))->set_default_value('You are the coach and you need to connect Stripe Account before posting service or get payments.'),                
+
+        Field::make('text', 'stripe_connect_status_message', __('You have connected to Stripe'))->set_default_value('You have connected to Stripe'),                
+
+        Field::make('text', 'stripe_connect_btn_label', __('Connect Stripe'))->set_default_value('Connect Stripe'),                
+        Field::make('text', 'stripe_disconnect_btn_label', __('Disconnect Stripe'))->set_default_value('Disconnect Stripe'),                
     )); 
 
         
