@@ -50,7 +50,7 @@ $service_category_list=get_all_service_category();
                             <option <?php if($service_category->slug==$service_category_chosen) echo 'selected'; ?> value="<?php echo $service_category->slug ?>"><?php echo $service_category->name;?></option>
                         <?php endforeach; ?>
                 </select>
-                <i class="fa fa-caret-down"></i>
+                
             </div>
 
             <div class="col-md-2 col-lg-2 col-sm-12 custom-filter-option custom-filter-date">                
@@ -58,7 +58,7 @@ $service_category_list=get_all_service_category();
                         <option <?php if($date_sort=='latest') echo 'selected'; ?> value="latest"><?php echo $textManager->getText('latest_label'); ?></option>           
                         <option <?php if($date_sort=='oldest') echo 'selected'; ?> value="oldest"><?php echo $textManager->getText('oldest_label'); ?></option>           
                 </select>    
-                <i class="fa fa-caret-down"></i>            
+                          
             </div>
 
             <div class="col-md-2 col-lg-2 col-sm-12 custom-filter-option custom-filter-price">                
@@ -72,7 +72,7 @@ $service_category_list=get_all_service_category();
                         <option <?php if($meettype_sort=='face-to-face') echo 'selected'; ?> value="face-to-face"><?php echo $textManager->getText('face_to_face_list_label'); ?></option>           
                         <option <?php if($meettype_sort=='online-meeting') echo 'selected'; ?> value="online-meeting"><?php echo $textManager->getText('online_meeting_list_label'); ?></option>           
                 </select> 
-                <i class="fa fa-caret-down"></i>            
+                         
             </div>
 
             <div class="col-md-1 col-lg-1 col-sm-12 custom-filter-option custom-filter-search-btn-container">                                
