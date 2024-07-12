@@ -23,8 +23,8 @@ function getStripeInfo()
                         'stripe_public_key'=>carbon_get_theme_option('custom_video_call_stripe_pk'),
                         'stripe_secret_key'=>carbon_get_theme_option('custom_video_call_stripe_sk'),                        
                         'stripe_redirect_url'=>'https://connect.stripe.com/oauth/authorize?response_type=code',
-                        //'redirect_uri_callback'=>site_url().'/profil/',                                                
-                        'redirect_uri_callback'=>site_url().'/myprofile/',                                                
+                        'redirect_uri_callback'=>site_url().'/profil/',                                                
+                        //'redirect_uri_callback'=>site_url().'/myprofile/',                                                
     );
     return $stripe_info;
 }
@@ -50,8 +50,8 @@ function connect_stripe_callback_init()
                 update_user_meta($user_id, 'stripe_account_id', $body['stripe_user_id']);
                 update_user_meta($user_id, 'stripe_connect_status', 'true');
             }
-            //wp_redirect(site_url('/profil/'));
-            wp_redirect(site_url('/myprofile/'));            
+            wp_redirect(site_url('/profil/'));
+            //wp_redirect(site_url('/myprofile/'));            
             exit();
         }    
 }

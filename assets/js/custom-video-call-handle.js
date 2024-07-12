@@ -15,8 +15,15 @@
         });
 
         $("#custom-post-service-form").submit(function(event){            
-            event.preventDefault(); 
-            var create_service_formdata = $("#custom-post-service-form").serialize();  
+            event.preventDefault();             
+            var service_description_content = tinyMCE.get('service_description').getContent();
+    
+            // Serialize form data
+            var create_service_formdata = $("#custom-post-service-form").serialize();
+            
+            // Append TinyMCE content to form data
+            create_service_formdata += '&service_description=' + encodeURIComponent(service_description_content);
+            
             
             $.ajax({
 
@@ -32,7 +39,7 @@
                     if(response.success=='true') 
                     {                        
                         toastr.success(response.message);
-                       window.location.href=response.redirect_url;
+                        window.location.href=response.redirect_url;
                     }          
                     else
                     {
