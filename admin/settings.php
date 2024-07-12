@@ -157,7 +157,8 @@ function custom_video_call_settings()
 
         Field::make('text', 'stripe_connect_btn_label', __('Connect Stripe'))->set_default_value('Connect Stripe'),                
         Field::make('text', 'stripe_disconnect_btn_label', __('Disconnect Stripe'))->set_default_value('Disconnect Stripe'),                
-    )); 
+    ));
+
 
         
 

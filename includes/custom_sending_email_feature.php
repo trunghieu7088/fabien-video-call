@@ -11,7 +11,7 @@ function custom_sending_email_feature($type,$recipient_email,$recipient_role,$bo
     {
         case 'booking':
             $subject = 'Your service has got an order !';
-            $body=$booking_info->post_title.' has made. Please visit this link '.$booking_link;
+            $body=$booking_info->post_title.' has made. Please visit '.$booking_link;
 
         break;
 
